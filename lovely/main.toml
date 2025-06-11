@@ -1,7 +1,7 @@
 [manifest]
 version = "1.0.0"
 dump_lua = true
-priority = 1
+priority = 4
 
 [[patches]]
 [patches.pattern]
@@ -72,6 +72,24 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "G.GAME.round_resets.blind_choices.Boss = get_new_boss()"
 position = "before"
+payload = '''
+if CardSleeves and G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_finity_challenger" and G.GAME.selected_back.name == "b_finity_challenger" then
+    G.finityvvcheck = true
+    G.GAME.round_resets.blind_choices.Big = get_new_boss()
+elseif G.GAME.modifiers.cry_rush_hour_ii then
+    G.GAME.round_resets.blind_choices.Small = get_new_boss()
+    G.GAME.round_resets.blind_choices.Big = get_new_boss()
+else
+    G.GAME.round_resets.blind_choices.Big = 'bl_big'
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "G.GAME.round_resets.blind_choices.Big = get_new_big()"
+position = "after"
 payload = '''
 if CardSleeves and G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_finity_challenger" and G.GAME.selected_back.name == "b_finity_challenger" then
     G.finityvvcheck = true
