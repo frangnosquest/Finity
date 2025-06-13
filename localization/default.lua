@@ -360,8 +360,8 @@ return {
 				"my guy! Chill out!"
             },
 			lq_endless_lemon_2={
-                "Took you",
-				"long enough!"
+                "You're too",
+				"good at this!"
             },
 			lq_endless_periwinkle_1={
                 "You could say...",
