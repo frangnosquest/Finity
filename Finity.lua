@@ -91,22 +91,22 @@ FinisherBossBlinddecksprites = {
 --["boss blind key"] = {"identifier of your quips in the localization files", number of quips, number of endless quips}
 
 FinisherBossBlindQuips = {
-    ["bl_final_acorn"] = {"amber",3},
-    ["bl_final_leaf"] = {"verdant",3},
+    ["bl_final_acorn"] = {"amber",3,1},
+    ["bl_final_leaf"] = {"verdant",3,3},
     ["bl_final_vessel"] = {"violet",3,3},
 	["bl_final_heart"] = {"crimson",3,1},
 	["bl_final_bell"] = {"cerulean",3,2},
-	["bl_cry_lavender_loop"] = {"lavender",3,1}, --built-in cross-mod jokers
+	["bl_cry_lavender_loop"] = {"lavender",3,2}, --built-in cross-mod jokers
 	["bl_cry_tornado"] = {"turquoise",3,3},
 	["bl_cry_vermillion_virus"] = {"vermillion",3,3},
 	["bl_cry_sapphire_stamp"] = {"sapphire",3,2},
 	["bl_cry_obsidian_orb"] = {"obsidian",3,3},
-	["bl_cry_trophy"] = {"lemon",3,1},
+	["bl_cry_trophy"] = {"lemon",3,2},
 	["bl_akyrs_final_periwinkle_pinecone"] = {"periwinkle",3,1},
 	["bl_akyrs_final_razzle_raindrop"] = {"razzle",3},
-	["bl_akyrs_final_lilac_lasso"] = {"lilac",3},
+	["bl_akyrs_final_lilac_lasso"] = {"lilac",3,3},
 	["bl_akyrs_final_velvet_vapour"] = {"velvet",3},
-	["bl_akyrs_final_chamomile_cloud"] = {"chamomile",3},
+	["bl_akyrs_final_chamomile_cloud"] = {"chamomile",3,1},
 	["bl_akyrs_final_salient_stream"] = {"salient",3},
 	["bl_akyrs_final_luminous_lemonade"] = {"luminous",3},
 	["bl_akyrs_final_glorious_glaive"] = {"glorious",3,2},
@@ -1921,7 +1921,7 @@ if next(SMODS.find_mod('partner')) then
         return { vars = {card.ability.extra.mult,card.ability.extra.mult_mod*benefits} }
     end,
     calculate = function(self, card, context)
-        if (context.partner_hand_drawn and card.ability.hand_played == true) or context.partner_end_of_round then
+        if (context.hand_drawn and card.ability.hand_played == true) or context.end_of_round then
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i].ability.finitycrimsonheartmark and G.jokers.cards[i].ability.finitycrimsonheartmark == "lovesick" then
 					G.jokers.cards[i].ability.finitycrimsonheartmark = nil
@@ -1930,7 +1930,7 @@ if next(SMODS.find_mod('partner')) then
 					end
 				end
 			end
-			if context.partner_hand_drawn then
+			if context.hand_drawn then
 				card.ability.hand_played = false
 				local _heartlesstable = {}
 				for _, v in ipairs(G.jokers.cards) do
@@ -1982,7 +1982,7 @@ Partner_API.Partner{
         return { vars = {card.ability.extra.money*benefits} }
     end,
     calculate = function(self, card, context)
-        if context.partner_selling_card then
+        if context.selling_card then
             local benefits = 1
             if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
 			return {
@@ -2016,7 +2016,7 @@ Partner_API.Partner{
         return { vars = {benefits} }
     end,
     calculate = function(self, card, context)
-        if context.partner_setting_blind then
+        if context.setting_blind then
 			local benefits = 1
             if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
             local blindvalue = to_number(G.GAME.blind.chips)
@@ -2052,13 +2052,13 @@ Partner_API.Partner{
         return { vars = {card.ability.extra.mult,card.ability.extra.mult_mod*benefits} }
     end,
     calculate = function(self, card, context)
-		if context.partner_main and card.ability.extra.mult > 0 then
+		if context.main and card.ability.extra.mult > 0 then
             return {
                 message = localize{type = "variable", key = "a_mult", vars = {card.ability.extra.mult}},
                 mult_mod = card.ability.extra.mult,
             }
         end
-        if context.partner_setting_blind then
+        if context.setting_blind then
 			card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
 			for i = 1, 3 do
 				G.E_MANAGER:add_event(Event({ trigger = 'after', delay = 0.2, func = function()

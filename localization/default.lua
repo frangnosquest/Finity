@@ -276,30 +276,21 @@ return {
 				"next time."
             },
             lq_endless_amber_1={
-                "Oh dear!",
-				"Did I do that?"
-            },
-            lq_endless_amber_2={
-                "Keep better",
-				"track of your",
-				"Jokers next time!"
-            },
-            lq_endless_amber_3={
-                "You need to",
-				"keep organized!"
+                "Watch where",
+				"you're going!"
             },
 			lq_endless_verdant_1={
-                "Couldn't afford to sell",
-				"me even one of your",
-				"precious Jokers, huh?"
+                "Your Jokers.",
+				"Give them to me."
             },
 			lq_endless_verdant_2 = {
-				"Stingy today,",
-				"are we?",
+				"I'm afraid your",
+				"dollar won't be",
+				"enough this time."
 			},
 			lq_endless_verdant_3={
-                "Hoarding will",
-				"get you nowhere."
+                "I don't take",
+				"bribes."
             },
             lq_endless_violet_1={
                 "Any more, and",
@@ -316,6 +307,10 @@ return {
             lq_endless_lavender_1={
                 "This game's run",
 				"on far too long!"
+            },
+			lq_endless_lavender_2={
+                "Took you long",
+				"enough!"
             },
 			lq_endless_turquoise_1={
                 "Tsk! Don't know",
@@ -364,6 +359,10 @@ return {
                 "You already won,",
 				"my guy! Chill out!"
             },
+			lq_endless_lemon_2={
+                "Took you",
+				"long enough!"
+            },
 			lq_endless_periwinkle_1={
                 "You could say...",
 				"your fate was sealed",
@@ -380,17 +379,20 @@ return {
                 "I- I'm sorry..."
             },
 			lq_endless_lilac_1={
-                "Don't be so hard",
-				"on yourself, sugar!"
+                "Woah there,",
+				"partner!"
             },
 			lq_endless_lilac_2={
-                "Sorry, hun, but",
-				"wranglin' your",
-				"Jokers is my job!"
+                "Y'all gotta take",
+				"it easy, y'hear?"
             },
 			lq_endless_lilac_3={
-                "Y'all come back",
-				"now, y'hear?"
+                "Now mosey on",
+				"back to where",
+				"ya came!"
+            },
+			lq_endless_chamomile_1={
+                "Zzz... huhhh?",
             },
 			lq_endless_glorious_1={
                 "GG, well",
