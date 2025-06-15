@@ -1587,29 +1587,29 @@ SMODS.Joker {
 		end
 	end,
 	calculate = function(self, card, context)
-		if context.after and not context.blueprint then
-			for i = 1, #G.play.cards do
-				if tostring(G.play.cards[i].config.card.value) == "finity_V" and G.play.cards[i+1] then
+		if context.after and context.scoring_hand and not context.blueprint then
+			for i = 1, #context.scoring_hand do
+				if tostring(context.scoring_hand[i].config.card.value) == "finity_V" and context.scoring_hand[i+1] then
 					G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
-					bonus = 2 * (2 + G.play.cards[i].ability.perma_bonus or 0)
-					G.play.cards[i+1].ability.perma_bonus = G.play.cards[i+1].ability.perma_bonus or 0
-					G.play.cards[i+1].ability.perma_bonus = G.play.cards[i+1].ability.perma_bonus + bonus
-					G.play.cards[i+1]:juice_up(0.3, 0.3)
+					bonus = 2 * (2 + context.scoring_hand[i].ability.perma_bonus or 0)
+					context.scoring_hand[i+1].ability.perma_bonus = context.scoring_hand[i+1].ability.perma_bonus or 0
+					context.scoring_hand[i+1].ability.perma_bonus = context.scoring_hand[i+1].ability.perma_bonus + bonus
+					context.scoring_hand[i+1]:juice_up(0.3, 0.3)
 					return true end}))
 					SMODS.calculate_effect({
 						message = "Bonus!",
 						colour = G.C.CHIPS
-					}, G.play.cards[i])
+					}, context.scoring_hand[i])
 				end
 			end
 			local activated = 0
-			for i = 1, #G.play.cards do
-				if tostring(G.play.cards[i].config.card.value) == tostring(card.ability.ranks.first) or tostring(G.play.cards[i].config.card.value) == tostring(card.ability.ranks.second) then
-					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function() G.play.cards[i]:flip(); play_sound('card1', 1); G.play.cards[i]:juice_up(0.3, 0.3); return true end }))
+			for i = 1, #context.scoring_hand do
+				if tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.first) or tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.second) then
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function() context.scoring_hand[i]:flip(); play_sound('card1', 1); context.scoring_hand[i]:juice_up(0.3, 0.3); return true end }))
 					G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.05,func = function()
-						SMODS.change_base(G.play.cards[i], G.play.cards[i].config.card.suit, "finity_V")
+						SMODS.change_base(context.scoring_hand[i], context.scoring_hand[i].config.card.suit, "finity_V")
 					return true end}))
-					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 1, func = function() G.play.cards[i]:flip(); play_sound('tarot2', 1, 0.6); card:juice_up(0.3, 0.3); G.play.cards[i]:juice_up(0.3, 0.3); return true end }))
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 1, func = function() context.scoring_hand[i]:flip(); play_sound('tarot2', 1, 0.6); card:juice_up(0.3, 0.3); context.scoring_hand[i]:juice_up(0.3, 0.3); return true end }))
 					activated = activated + 1
 				end
 			end
