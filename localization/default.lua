@@ -254,14 +254,12 @@ return {
 				"don't go..."
             },
             lq_endless_crimson_2={
-                "Aww, was my",
-				"love not",
-				"enough?"
+                "Leaving so",
+				"soon?"
             },
             lq_endless_crimson_3={
-                "Shame we can't",
-				"play together",
-				"forever..."
+                "Come back again",
+				"one day..!"
             },
             lq_endless_cerulean_1={
                 "This ends here!"
@@ -271,13 +269,21 @@ return {
 				"it's my turn now."
             },
             lq_endless_cerulean_3={
-                "You ought to",
-				"let me play",
-				"next time."
+                "I'm the boss",
+				"around here,",
+				"not you."
             },
             lq_endless_amber_1={
                 "Watch where",
 				"you're going!"
+            },
+			lq_endless_amber_2={
+                "Hard to play",
+				"when you can't",
+				"see, huh?"
+            },
+			lq_endless_amber_3={
+                "You fumbled it!"
             },
 			lq_endless_verdant_1={
                 "Your Jokers.",
@@ -344,6 +350,10 @@ return {
                 "I knew I'd",
 				"forgotten something!"
             },
+			lq_endless_sapphire_3={
+                "Too many cards",
+				"to keep track of!"
+            },
 			lq_endless_obsidian_1={
                 "This...",
 				"was inevitable."
@@ -363,14 +373,19 @@ return {
                 "You're too",
 				"good at this!"
             },
+			lq_endless_lemon_3={
+                "Did you lose",
+				"your Chips at",
+				"the finish line?"
+            },
 			lq_endless_periwinkle_1={
                 "You could say...",
 				"your fate was sealed",
 				"from the start!"
             },
 			lq_endless_razzle_1={
-                "Sniff... I can't",
-				"see your suits..."
+                "Quit raining",
+				"on my parade..!"
             },
 			lq_endless_razzle_2={
                 "Boo hoo..!",
@@ -401,6 +416,9 @@ return {
 			lq_endless_glorious_2={
                 "C-C-C-Combo",
 				"breaker!"
+            },
+			lq_endless_glorious_3={
+                "o7",
             },
 			pnr_finity_scrooge_1={
                 "Would you rather",
@@ -470,6 +488,48 @@ return {
                 "I'll keep those",
 				"Jokers of yours",
 				"in order!"
+            },
+			pnr_finity_lovesick_1={
+                "I love you!",
+            },
+            pnr_finity_lovesick_2={
+                "I promise to",
+				"stay by your",
+				"side!"
+            },
+            pnr_finity_lovesick_3={
+                "I won't ever leave",
+				"you! I swear!"
+            },
+			pnr_finity_lovesick_4={
+                "Play with me,",
+				"forever..."
+            },
+			pnr_finity_lovesick_5={
+                "I'll keep you",
+				"company, I don't",
+				"mind..."
+            },
+			pnr_finity_controlling_1={
+                "Do what I say and",
+				"we'll get through",
+				"this together."
+            },
+            pnr_finity_controlling_2={
+                "Let me handle this."
+            },
+            pnr_finity_controlling_3={
+                "I'm well equipped",
+				"to deal with this",
+				"on my own."
+            },
+			pnr_finity_controlling_4={
+                "You should give",
+				"me the controls..."
+            },
+			pnr_finity_controlling_5={
+                "I'm a natural",
+				"leader."
             },
 		}
 	},

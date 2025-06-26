@@ -16,7 +16,7 @@ SMODS.Atlas({key = 'vranklccompat', path = 'compat/vranklccompat.png', px = 71, 
 
 local finity_config = SMODS.current_mod.config
 SMODS.current_mod.optional_features = function()
-    return { retrigger_joker = true }
+    return { retrigger_joker = true, post_trigger = true }
 end
 
 --hello to whoever is reading this, the following comments will
@@ -91,25 +91,25 @@ FinisherBossBlinddecksprites = {
 --["boss blind key"] = {"identifier of your quips in the localization files", number of quips, number of endless quips}
 
 FinisherBossBlindQuips = {
-    ["bl_final_acorn"] = {"amber",3,1},
+    ["bl_final_acorn"] = {"amber",3,3},
     ["bl_final_leaf"] = {"verdant",3,3},
     ["bl_final_vessel"] = {"violet",3,3},
-	["bl_final_heart"] = {"crimson",3,1},
-	["bl_final_bell"] = {"cerulean",3,2},
+	["bl_final_heart"] = {"crimson",3,3},
+	["bl_final_bell"] = {"cerulean",3,3},
 	["bl_cry_lavender_loop"] = {"lavender",3,2}, --built-in cross-mod jokers
 	["bl_cry_tornado"] = {"turquoise",3,3},
 	["bl_cry_vermillion_virus"] = {"vermillion",3,3},
-	["bl_cry_sapphire_stamp"] = {"sapphire",3,2},
+	["bl_cry_sapphire_stamp"] = {"sapphire",3,3},
 	["bl_cry_obsidian_orb"] = {"obsidian",3,3},
-	["bl_cry_trophy"] = {"lemon",3,2},
+	["bl_cry_trophy"] = {"lemon",3,3},
 	["bl_akyrs_final_periwinkle_pinecone"] = {"periwinkle",3,1},
-	["bl_akyrs_final_razzle_raindrop"] = {"razzle",3},
+	["bl_akyrs_final_razzle_raindrop"] = {"razzle",3,1},
 	["bl_akyrs_final_lilac_lasso"] = {"lilac",3,3},
 	["bl_akyrs_final_velvet_vapour"] = {"velvet",3},
 	["bl_akyrs_final_chamomile_cloud"] = {"chamomile",3,1},
 	["bl_akyrs_final_salient_stream"] = {"salient",3},
 	["bl_akyrs_final_luminous_lemonade"] = {"luminous",3},
-	["bl_akyrs_final_glorious_glaive"] = {"glorious",3,2},
+	["bl_akyrs_final_glorious_glaive"] = {"glorious",3,3},
 	}
 	
 --and that's all you have to do with stuff here, create your boss joker, make sure to give it the showdown rarity
@@ -504,13 +504,12 @@ SMODS.Joker {
     loc_txt = {
         name = "Cerulean Bell",
         text = {
-            "One random card in hand is {C:attention}marked",
-			"every hand, {C:attention}marked{} cards permanently",
-			"gain {X:mult,C:white}X#1#{} Mult when scored"
+            "One random card in hand is {C:attention}marked,",
+			"{C:attention}marked{} cards permanently gain",
+			"{X:mult,C:white}X#1#{} Mult when scored"
         }
     },
 	config = {
-        hand_played = true,
 		identifier = 0,
 		xmultbonus = 2
     },
@@ -534,10 +533,7 @@ SMODS.Joker {
 		end
     end,
 	calculate = function(self, card, context)
-		if context.before and not context.blueprint then
-			card.ability.hand_played = true
-		end
-		if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or context.end_of_round then
+		if (context.hand_drawn and not context.blueprint) or context.end_of_round then
 			for i = 1, #G.playing_cards do
 				if G.playing_cards[i].ability.finityceruleanbellmark and G.playing_cards[i].ability.finityceruleanbellmark == card.ability.identifier then
 					G.playing_cards[i].ability.finityceruleanbellmark = nil
@@ -547,7 +543,6 @@ SMODS.Joker {
 				end
 			end
 			if context.hand_drawn then
-				card.ability.hand_played = false
 				local _belllesstable = {}
 				for _, v in ipairs(G.hand.cards) do
 					if not v.ability.finityceruleanbellmark then
@@ -732,34 +727,64 @@ function Game:start_run(args)
     old_start_run(self,args)
     for i = 1, #G.jokers.cards do
 		if G.jokers.cards[i].ability.finitycrimsonheartmark then
-			G.jokers.cards[i].finity = {}
-			G.jokers.cards[i].finity.floating_sprite_mark = Sprite(
-			G.jokers.cards[i].T.x,
-			G.jokers.cards[i].T.y,
-			G.jokers.cards[i].T.w,
-			G.jokers.cards[i].T.h,
-			G.ASSET_ATLAS['finity_marks'],
-			{ x = 0, y = 0 }
-			)
-			G.jokers.cards[i].finity.floating_sprite_mark.role.draw_major = G.jokers.cards[i]
-			G.jokers.cards[i].finity.floating_sprite_mark.states.hover.can = false
-			G.jokers.cards[i].finity.floating_sprite_mark.states.click.can = false
+			if G.jokers.cards[i].ability.finitycrimsonheartmark == "lovesick" then
+				G.jokers.cards[i].finity = {}
+				G.jokers.cards[i].finity.floating_sprite_mark = Sprite(
+				G.jokers.cards[i].T.x,
+				G.jokers.cards[i].T.y,
+				G.jokers.cards[i].T.w,
+				G.jokers.cards[i].T.h,
+				G.ASSET_ATLAS['finity_marks'],
+				{ x = 3, y = 0 }
+				)
+				G.jokers.cards[i].finity.floating_sprite_mark.role.draw_major = G.jokers.cards[i]
+				G.jokers.cards[i].finity.floating_sprite_mark.states.hover.can = false
+				G.jokers.cards[i].finity.floating_sprite_mark.states.click.can = false
+			else
+				G.jokers.cards[i].finity = {}
+				G.jokers.cards[i].finity.floating_sprite_mark = Sprite(
+				G.jokers.cards[i].T.x,
+				G.jokers.cards[i].T.y,
+				G.jokers.cards[i].T.w,
+				G.jokers.cards[i].T.h,
+				G.ASSET_ATLAS['finity_marks'],
+				{ x = 0, y = 0 }
+				)
+				G.jokers.cards[i].finity.floating_sprite_mark.role.draw_major = G.jokers.cards[i]
+				G.jokers.cards[i].finity.floating_sprite_mark.states.hover.can = false
+				G.jokers.cards[i].finity.floating_sprite_mark.states.click.can = false
+			end
 		end
 	end
 	for i = 1, #G.hand.cards do
 		if G.hand.cards[i].ability.finityceruleanbellmark then
-			G.hand.cards[i].finity = {}
-			G.hand.cards[i].finity.floating_sprite_mark = Sprite(
-			G.hand.cards[i].T.x,
-			G.hand.cards[i].T.y,
-			G.hand.cards[i].T.w,
-			G.hand.cards[i].T.h,
-			G.ASSET_ATLAS['finity_marks'],
-			{ x = 1, y = 0 }
-			)
-			G.hand.cards[i].finity.floating_sprite_mark.role.draw_major = G.hand.cards[i]
-			G.hand.cards[i].finity.floating_sprite_mark.states.hover.can = false
-			G.hand.cards[i].finity.floating_sprite_mark.states.click.can = false
+			if G.hand.cards[i].ability.finityceruleanbellmark == "controlling" then
+				G.hand.cards[i].finity = {}
+				G.hand.cards[i].finity.floating_sprite_mark = Sprite(
+				G.hand.cards[i].T.x,
+				G.hand.cards[i].T.y,
+				G.hand.cards[i].T.w,
+				G.hand.cards[i].T.h,
+				G.ASSET_ATLAS['finity_marks'],
+				{ x = 4, y = 0 }
+				)
+				G.hand.cards[i].finity.floating_sprite_mark.role.draw_major = G.hand.cards[i]
+				G.hand.cards[i].finity.floating_sprite_mark.states.hover.can = false
+				G.hand.cards[i].finity.floating_sprite_mark.states.click.can = false
+			else
+				G.hand.cards[i].finity = {}
+				G.hand.cards[i].finity.floating_sprite_mark = Sprite(
+				G.hand.cards[i].T.x,
+				G.hand.cards[i].T.y,
+				G.hand.cards[i].T.w,
+				G.hand.cards[i].T.h,
+				G.ASSET_ATLAS['finity_marks'],
+				{ x = 1, y = 0 }
+				)
+				G.hand.cards[i].finity.floating_sprite_mark.role.draw_major = G.hand.cards[i]
+				G.hand.cards[i].finity.floating_sprite_mark.states.hover.can = false
+				G.hand.cards[i].finity.floating_sprite_mark.states.click.can = false
+			end
 		end
 	end
 	for i = 1, #G.playing_cards do
@@ -1187,7 +1212,7 @@ SMODS.Joker {
             }
         end
 		if context.destroying_card and not context.blueprint then
-			if pseudorandom('turquoisetornado') < G.GAME.probabilities.normal / (card.ability.odds*2) then
+			if pseudorandom('turquoisetornado') < G.GAME.probabilities.normal*2 / card.ability.odds then
 				context.destroying_card.ability.perma_bonus = context.destroying_card.ability.perma_bonus or 0
 				card.ability.extra.chips = card.ability.extra.chips + ((context.destroying_card.base.nominal + context.destroying_card.ability.perma_bonus) * card.ability.multiplier)
 				return {
@@ -1897,73 +1922,10 @@ SMODS.Rank {
 end
 
 if next(SMODS.find_mod('partner')) then
---[[Partner_API.Partner{
-	key = "lovesick",
-    name = "The Lovesick",
-    unlocked = true,
-    discovered = true,
-	individual_quips = true,
-    pos = {x = 0, y = 0},
-    loc_txt = {
-        name = "The Lovesick",
-        text = {
-            "One random {C:attention}Joker{} is {C:attention}marked",
-			"every hand, gains {C:mult}+#2#{} Mult",
-			"when a marked {C:attention}Joker{} triggers",
-			"{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
-        }
-    },
-    atlas = "partners",
-    config = {extra = {related_card = "j_finity_crimsonheart", mult = 0, mult_mod = 0.5}, hand_played = true},
-    loc_vars = function(self, info_queue, card)
-        local benefits = 1
-        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
-        return { vars = {card.ability.extra.mult,card.ability.extra.mult_mod*benefits} }
-    end,
-    calculate = function(self, card, context)
-        if (context.hand_drawn and card.ability.hand_played == true) or context.end_of_round then
-			for i = 1, #G.jokers.cards do
-				if G.jokers.cards[i].ability.finitycrimsonheartmark and G.jokers.cards[i].ability.finitycrimsonheartmark == "lovesick" then
-					G.jokers.cards[i].ability.finitycrimsonheartmark = nil
-					if G.jokers.cards[i].finity then
-						G.jokers.cards[i].finity.floating_sprite_mark = nil
-					end
-				end
-			end
-			if context.hand_drawn then
-				card.ability.hand_played = false
-				local _heartlesstable = {}
-				for _, v in ipairs(G.jokers.cards) do
-					if v ~= card and v.config.center.key ~= "j_finity_crimsonheart" and not v.ability.finitycrimsonheartmark then
-						table.insert(_heartlesstable, v)
-					end
-				end
-				if next(_heartlesstable) ~= nil then
-					local _heart_target = pseudorandom_element(_heartlesstable)
-					_heart_target.ability.finitycrimsonheartmark = "lovesick"
-					_heart_target.finity = {}
-					_heart_target.finity.floating_sprite_mark = Sprite(
-					_heart_target.T.x,
-					_heart_target.T.y,
-					_heart_target.T.w,
-					_heart_target.T.h,
-					G.ASSET_ATLAS['finity_marks'],
-					{ x = 0, y = 0 }
-					)
-					_heart_target.finity.floating_sprite_mark.role.draw_major = _heart_target
-					_heart_target.finity.floating_sprite_mark.states.hover.can = false
-					_heart_target.finity.floating_sprite_mark.states.click.can = false
-					_heart_target:juice_up(0.3, 0.5)
-					card:juice_up(0.3, 0.5)
-				end
-			end
-		end
-    end,
-}]]
 Partner_API.Partner{
     key = "scrooge",
     name = "The Scrooge",
-    unlocked = true,
+    unlocked = false,
     discovered = true,
 	individual_quips = true,
     pos = {x = 3, y = 0},
@@ -1972,7 +1934,12 @@ Partner_API.Partner{
         text = {
             "Earn {C:money}#1#${} when",
 			"you sell a card",
-        }
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Verdant Leaf{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
     },
     atlas = "partners",
     config = {extra = {related_card = "j_finity_verdantleaf", money = 1}},
@@ -1991,11 +1958,21 @@ Partner_API.Partner{
 			}
         end
     end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_verdantleaf" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
 }
 Partner_API.Partner{
     key = "glutton",
     name = "The Glutton",
-    unlocked = true,
+    unlocked = false,
     discovered = true,
 	individual_quips = true,
     pos = {x = 4, y = 0},
@@ -2006,7 +1983,12 @@ Partner_API.Partner{
 			"{C:attention}Score{} equal to #1#",
 			"difference between current",
 			"and previous target"
-        }
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Violet Vessel{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
     },
     atlas = "partners",
     config = {extra = {related_card = "j_finity_violetvessel", previous_score = 0}},
@@ -2026,11 +2008,21 @@ Partner_API.Partner{
 			card.ability.extra.previous_score = blindvalue
         end
     end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_violetvessel" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
 }
 Partner_API.Partner{
     key = "klutz",
     name = "The Klutz",
-    unlocked = true,
+    unlocked = false,
     discovered = true,
 	individual_quips = true,
     pos = {x = 2, y = 0},
@@ -2042,7 +2034,12 @@ Partner_API.Partner{
 			"is selected, cannot",
 			"rearrange Jokers",
 			"{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
-        }
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Amber Acorn{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
     },
     atlas = "partners",
     config = {extra = {related_card = "j_finity_amberacorn", mult = 0, mult_mod = 4}},
@@ -2075,6 +2072,200 @@ Partner_API.Partner{
 			}
 		end
     end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_amberacorn" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+	key = "lovesick",
+    name = "The Lovesick",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 0, y = 0},
+    loc_txt = {
+        name = "The Lovesick",
+        text = {
+            "One random {C:attention}Joker{} is {C:attention}marked",
+			"every hand, gains {C:mult}+#2#{} Mult",
+			"when a marked {C:attention}Joker{} triggers",
+			"{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Crimson Heart{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_crimsonheart", mult = 0, mult_mod = 0.5}, hand_played = true},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {card.ability.extra.mult,card.ability.extra.mult_mod*benefits} }
+    end,
+    calculate = function(self, card, context)
+		if context.before and not context.blueprint then
+			card.ability.hand_played = true
+		end
+        if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or context.end_of_round then
+			for i = 1, #G.jokers.cards do
+				if G.jokers.cards[i].ability.finitycrimsonheartmark and G.jokers.cards[i].ability.finitycrimsonheartmark == "lovesick" then
+					G.jokers.cards[i].ability.finitycrimsonheartmark = nil
+					if G.jokers.cards[i].finity then
+						G.jokers.cards[i].finity.floating_sprite_mark = nil
+					end
+				end
+			end
+			if context.hand_drawn then
+				card.ability.hand_played = false
+				local _heartlesstable = {}
+				for _, v in ipairs(G.jokers.cards) do
+					if v ~= card and v.config.center.key ~= "j_finity_crimsonheart" and not v.ability.finitycrimsonheartmark then
+						table.insert(_heartlesstable, v)
+					end
+				end
+				if next(_heartlesstable) ~= nil then
+					local _heart_target = pseudorandom_element(_heartlesstable)
+					_heart_target.ability.finitycrimsonheartmark = "lovesick"
+					_heart_target.finity = {}
+					_heart_target.finity.floating_sprite_mark = Sprite(
+					_heart_target.T.x,
+					_heart_target.T.y,
+					_heart_target.T.w,
+					_heart_target.T.h,
+					G.ASSET_ATLAS['finity_marks'],
+					{ x = 3, y = 0 }
+					)
+					_heart_target.finity.floating_sprite_mark.role.draw_major = _heart_target
+					_heart_target.finity.floating_sprite_mark.states.hover.can = false
+					_heart_target.finity.floating_sprite_mark.states.click.can = false
+					_heart_target:juice_up(0.3, 0.5)
+					card:juice_up(0.3, 0.5)
+				end
+			end
+		end
+		if context.post_trigger and context.other_card then
+			if context.other_card.ability and context.other_card.ability.finitycrimsonheartmark then
+				card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
+                return {
+                    message = "Partner Upgrade!",
+					colour = G.C.RED,
+                    card = card
+                }
+			end
+		end
+		if context.joker_main and card.ability.extra.mult > 0 then
+			return {
+                mult_mod = card.ability.extra.mult,
+                message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
+            }
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_crimsonheart" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "controlling",
+    name = "The Controlling",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 1, y = 0},
+    loc_txt = {
+        name = "The Controlling",
+        text = {
+            "One random card in hand is",
+			"{C:attention}marked{} every hand, {C:attention}retrigger",
+			"{C:attention}marked{} cards #1#"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Cerulean Bell{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_ceruleanbell"}},
+	loc_vars = function(self, info_queue, card)
+        local benefits = "once"
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = "twice" end
+        return { vars = {benefits} }
+    end,
+    calculate = function(self, card, context)
+		if (context.hand_drawn and not context.blueprint) or context.end_of_round then
+			for i = 1, #G.playing_cards do
+				if G.playing_cards[i].ability.finityceruleanbellmark and G.playing_cards[i].ability.finityceruleanbellmark == "controlling" then
+					G.playing_cards[i].ability.finityceruleanbellmark = nil
+					if G.playing_cards[i].finity then
+						G.playing_cards[i].finity.floating_sprite_mark = nil
+					end
+				end
+			end
+			if context.hand_drawn then
+				local _belllesstable = {}
+				for _, v in ipairs(G.hand.cards) do
+					if not v.ability.finityceruleanbellmark then
+						table.insert(_belllesstable, v)
+					end
+				end
+				if next(_belllesstable) ~= nil then
+					local _bell_target = pseudorandom_element(_belllesstable)
+					_bell_target.ability.finityceruleanbellmark = "controlling"
+					_bell_target.finity = {}
+					_bell_target.finity.floating_sprite_mark = Sprite(
+					_bell_target.T.x,
+					_bell_target.T.y,
+					_bell_target.T.w,
+					_bell_target.T.h,
+					G.ASSET_ATLAS['finity_marks'],
+					{ x = 4, y = 0 }
+					)
+					_bell_target.finity.floating_sprite_mark.role.draw_major = _bell_target
+					_bell_target.finity.floating_sprite_mark.states.hover.can = false
+					_bell_target.finity.floating_sprite_mark.states.click.can = false
+					_bell_target:juice_up(0.3, 0.5)
+					card:juice_up(0.3, 0.5)
+				end
+			end
+		end
+		if context.repetition and not context.repetition_only then
+			if context.other_card.ability.finityceruleanbellmark then
+				local benefits = 1
+				if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+				return {
+					message = localize("k_again_ex"),
+					repetitions = benefits,
+					card = card
+				}
+			end
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_ceruleanbell" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
 }
 end
 
