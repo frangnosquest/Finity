@@ -278,12 +278,20 @@ SMODS.Joker {
     },
 	config = {
         extra = {xmult = 1},
-		max = 2
+		max = 2,
+		credits = "no"
     },
 	loc_vars = function(self, info_queue, card)
-        return {
-            vars = {card.ability.extra.xmult,card.ability.max}
-        }
+		if card.ability.credits == "no" then
+			return {
+				vars = {card.ability.extra.xmult,card.ability.max}
+			}
+		else
+			return {
+				vars = {card.ability.extra.xmult,card.ability.max},
+				key = card.ability.credits, set = 'Joker'
+			}
+		end
     end,
     unlocked = true,
     discovered = true,
@@ -2309,6 +2317,95 @@ G.localization.descriptions.Other['razzlemark'] =  {
 			},
     }
 
+local old_Game_main_menu = Game.main_menu
+function Game:main_menu(ctx)
+    local ret = old_Game_main_menu(self,ctx)
+    if self.title_top then
+        local tg = self.title_top
+		local card
+		if finity_config.spectral == true then
+			card = Card(tg.T.x,tg.T.y,G.CARD_W,G.CARD_H,nil,G.P_CENTERS["c_finity_finity"])
+		else
+			card = Card(tg.T.x,tg.T.y,G.CARD_W,G.CARD_H,nil,G.P_CENTERS[pseudorandom_element({"j_finity_amberacorn","j_finity_verdantleaf","j_finity_violetvessel","j_finity_crimsonheart","j_finity_ceruleanbell"})])
+		end
+        card.bypass_discovery_center = true
+        card.T.w = card.T.w * 1.1 * 1.2
+        card.T.h = card.T.h * 1.1 * 1.2
+        G.title_top.T.w = G.title_top.T.w * 1.7675
+        G.title_top.T.x = G.title_top.T.x - 0.8
+        card:set_sprites(card.config.center)
+        card.no_ui = true
+        card.states.visible = false
+        self.title_top:emplace(card)
+        self.title_top:align_cards()
+		G.E_MANAGER:add_event(Event({
+			trigger = "after",
+			delay = 0,
+			blockable = false,
+			blocking = false,
+			func = function()
+				if change_context == "splash" then
+					card.states.visible = true
+					card:start_materialize({ G.C.WHITE, G.C.WHITE }, true, 2.5)
+				else
+					card.states.visible = true
+					card:start_materialize({ G.C.WHITE, G.C.WHITE }, nil, 1.2)
+				end
+				return true
+			end,
+		}))
+		end
+    return ret
+end
+
+SMODS.current_mod.extra_tabs = function()
+    return {
+        {
+            label = 'Credits',
+            tab_definition_function = function()
+				local creditsbuild = {
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "This mod is brought to you by:", colour = G.C.WHITE, scale = 1}}}},
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "", colour = G.C.WHITE, scale = 0.5}}}},
+				}
+
+                G.finity_credits_area = CardArea(
+                    G.ROOM.T.x + 0.2 * G.ROOM.T.w / 2, G.ROOM.T.h,
+                    4.25 * G.CARD_W,
+                    0.95 * G.CARD_H,
+                    { card_limit = 5, type = 'title', highlight_limit = 0, collection = true }
+                )
+
+                local whatspritenow = 5
+				for i, key in ipairs({ "freh", "missingnumber"}) do
+                    local card = Card(0, 0,
+                        G.CARD_W, G.CARD_H, G.P_CARDS.empty,
+                        G.P_CENTERS["j_finity_violetvessel"])
+
+                    G.finity_credits_area:emplace(card)
+					card.ability.credits = key
+					card.children.center:set_sprite_pos({x=0, y=whatspritenow})
+					card.children.floating_sprite:set_sprite_pos({x=1, y=whatspritenow})
+					whatspritenow = whatspritenow + 1
+                end
+                creditsbuild[#creditsbuild + 1] = {
+                    n = G.UIT.R,
+                    config = { align = "cm", padding = 0.07, no_fill = true },
+                    nodes = {
+                        { n = G.UIT.O, config = { object = G.finity_credits_area } }
+                    }
+                }
+                return {
+                    n = G.UIT.ROOT,
+                    config = {
+                        r = 0.1, minw = 10, minh = 6, align = "tm", padding = 0.2, colour = G.C.BLACK
+                    },
+                    nodes = creditsbuild
+                }
+            end
+        }
+    }
+end
+
 SMODS.current_mod.config_tab = function()
     local stake_colour_options = {}
 
@@ -2318,3 +2415,17 @@ SMODS.current_mod.config_tab = function()
             }},
     }}
 end
+
+G.localization.descriptions.Joker['freh'] =  {
+    name = "_Freh",
+    text = {
+        "{C:attention}Developer{}"
+    },
+}
+
+G.localization.descriptions.Joker['missingnumber'] =  {
+    name = "missingnumber",
+    text = {
+        "{C:attention}Artist{}"
+    },
+}
