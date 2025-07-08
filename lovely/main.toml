@@ -40,6 +40,12 @@ end
 position = 'after'
 payload = '''
 if next(SMODS.find_card("j_finity_periwinklepinecone")) and self.seal then should_debuff = false end
+if self.ability and self.ability.finitysaffronshieldmark then
+    if self.debuff then
+        self.debuff = false
+    end
+    return
+end
 '''
 match_indent = true
 
@@ -112,6 +118,7 @@ payload = '''
 if self.ability.finitycrimsonheartmark then badges[#badges + 1] = 'heart_mark' end
 if self.ability.finityceruleanbellmark then badges[#badges + 1] = 'bell_mark' end
 if self.ability.finityrazzleraindropmark then badges[#badges + 1] = 'raindrop_mark' end
+if self.ability.finitysaffronshieldmark then badges[#badges + 1] = 'shield_mark' end
 '''
 match_indent = true
 
@@ -124,6 +131,7 @@ payload = '''
 if v == 'heart_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'crimsonmark'} end
 if v == 'bell_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'ceruleanmark'} end
 if v == 'raindrop_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'razzlemark'} end
+if v == 'shield_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'saffronmark'} end
 '''
 match_indent = true
 
@@ -136,7 +144,7 @@ payload = '''
 badges=badges or {}
 local _markbadges = {}
 	for k, v in ipairs(badges) do
-		if v == 'heart_mark' or v == 'bell_mark' or v == 'raindrop_mark' then
+		if v == 'heart_mark' or v == 'bell_mark' or v == 'raindrop_mark' or v == 'shield_mark' then
 			_markbadges[k] = v
 		end
 	end
@@ -266,3 +274,17 @@ pattern = "if not G.GAME.modifiers.cry_conveyor and not G.GAME.cry_fastened then
 position = "at"
 payload = "if not G.GAME.modifiers.cry_conveyor and not G.GAME.cry_fastened and not (G.GAME.selected_partner_card and G.GAME.selected_partner_card.config and G.GAME.selected_partner_card.config.center.key == 'pnr_finity_klutz') then table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end) end"
 match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "if self.facing == 'front' then"
+position = 'after'
+match_indent = true
+payload = '''
+
+if self.area == G.hand and self.ability and self.ability.finitysaffronshieldmark then
+    return
+end
+
+'''

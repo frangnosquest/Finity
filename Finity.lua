@@ -3,6 +3,8 @@ SMODS.Atlas {key = "tag", path = "tag.png", px = 34, py = 34}
 SMODS.Atlas({key = 'bossjokers', path = 'jokers.png', px = 71, py = 95})
 SMODS.Atlas({key = 'crybossjokers', path = 'compat/cryptid.png', px = 71, py = 95})
 SMODS.Atlas({key = 'akyrsbossjokers', path = 'compat/aikoyorisshenanigans.png', px = 71, py = 95})
+SMODS.Atlas({key = 'ortalabbossjokers', path = 'compat/ortalab.png', px = 71, py = 95})
+SMODS.Atlas({key = 'cardsaucebossjokers', path = 'compat/cardsauce.png', px = 71, py = 95})
 SMODS.Atlas({key = 'consumables', path = 'consumables.png', px = 71, py = 95})
 SMODS.Atlas({key = 'marks', path = 'marks.png', px = 71, py = 95})
 SMODS.Atlas({key = 'backs', path = 'backs.png', px = 71, py = 95})
@@ -53,7 +55,14 @@ FinisherBossBlindStringMap = {
 	["bl_akyrs_final_chamomile_cloud"] = {"j_finity_chamomilecloud","Chamomile Cloud"},
 	["bl_akyrs_final_salient_stream"] = {"j_finity_salientstream","Salient Stream"},
 	["bl_akyrs_final_luminous_lemonade"] = {"j_finity_luminouslemonade","Luminous Lemonade"},
-	["bl_akyrs_final_glorious_glaive"] = {"j_finity_gloriousglaive","Glorious Glaive"}
+	["bl_akyrs_final_glorious_glaive"] = {"j_finity_gloriousglaive","Glorious Glaive"},
+	["bl_ortalab_celadon_clubs"] = {"j_finity_celadonclubs","Celadon Clubs"},
+	["bl_ortalab_caramel_coin"] = {"j_finity_caramelcoin","Caramel Coin"},
+	["bl_ortalab_saffron_shield"] = {"j_finity_saffronshield","Saffron Shield"},
+	["bl_ortalab_rouge_rose"] = {"j_finity_rougerose","Rouge Rose"},
+	["bl_ortalab_silver_sword"] = {"j_finity_silversword","Silver Sword"},
+	["bl_csau_mochamike"] = {"j_finity_mochamike","Mocha Mike"},
+	["bl_csau_feltfortress"] = {"j_finity_feltfortress","Felt Fortress"}
 	}
 
 --this table assigns sprites for the Taunting deck and is completely optional	
@@ -79,7 +88,14 @@ FinisherBossBlinddecksprites = {
 	["bl_akyrs_final_chamomile_cloud"] = {"finity_blinddeck",{ x = 3, y = 2 }},
 	["bl_akyrs_final_salient_stream"] = {"finity_blinddeck",{ x = 5, y = 2 }},
 	["bl_akyrs_final_luminous_lemonade"] = {"finity_blinddeck",{ x = 6, y = 2 }},
-	["bl_akyrs_final_glorious_glaive"] = {"finity_blinddeck",{ x = 7, y = 2 }}
+	["bl_akyrs_final_glorious_glaive"] = {"finity_blinddeck",{ x = 7, y = 2 }},
+	["bl_ortalab_celadon_clubs"] = {"finity_blinddeck",{ x = 0, y = 3 }},
+	["bl_ortalab_caramel_coin"] = {"finity_blinddeck",{ x = 1, y = 3 }},
+	["bl_ortalab_saffron_shield"] = {"finity_blinddeck",{ x = 2, y = 3 }},
+	["bl_ortalab_rouge_rose"] = {"finity_blinddeck",{ x = 3, y = 3 }},
+	["bl_ortalab_silver_sword"] = {"finity_blinddeck",{ x = 4, y = 3 }},
+	["bl_csau_mochamike"] = {"finity_blinddeck",{ x = 0, y = 4 }},
+	["bl_csau_feltfortress"] = {"finity_blinddeck",{ x = 1, y = 4 }},
 }
 
 --another optional feature is having the boss joker cards appear and say a quip instead of jimbo when losing to their respective blinds.
@@ -221,15 +237,29 @@ SMODS.Joker {
 	soul_pos = { x = 1, y = 3 },
 	calculate = function(self, card, context)
 		if context.selling_card and context.card.ability.set == "Joker" and context.card ~= card then
-			local _raritylist = {{1,"akyrs_supercommon"},2,{3,"poke_safari","payasaka_ahead"},{4,"finity_showdown","poke_mega","mf_bossblind","payasaka_daeha"},"cry_exotic"}
+			local _raritylist = {{1,"akyrs_supercommon","playbook_the","crp_trash","crp_:3"},{2,"akyrs_emerald"},{3,"poke_safari","payasaka_ahead"},{4,"finity_showdown","poke_mega","mf_bossblind","payasaka_daeha"},"cry_exotic"}
 			local _rarity = context.card.config.center.rarity
 			local _newrarity
 			local _raritiesstring = {"Common", "Uncommon", "Rare", "Legendary"}
 			if next(SMODS.find_mod('Cryptid')) then
-				_raritylist = {{1,"akyrs_supercommon"},{2,"cry_candy"},{3,"poke_safari","payasaka_ahead"},{"cry_epic","mf_bossblind"},{4,"finity_showdown","poke_mega","entr_reverse_legendary","payasaka_daeha"},"cry_exotic",{"entr_entropic","jen_wondrous","jen_ritualistic"},{"entr_zenith","jen_extraordinary","jen_transcendent"},{"jen_omegatranscendent","jen_omnipotent"}}
+				_raritylist = {{1,"akyrs_supercommon","playbook_the","crp_trash","crp_:3","crp_common_2"},{2,"cry_candy","akyrs_emerald","crp_uncommon_2"},{3,"poke_safari","payasaka_ahead","crp_rare_2"},{"cry_epic","mf_bossblind","crp_cipe"},{4,"finity_showdown","poke_mega","entr_reverse_legendary","payasaka_daeha"},{"cry_exotic","crp_exotic_2","unik_unik_legendary_blind_finity"},{"entr_entropic","jen_wondrous","jen_ritualistic","playbook_playful","crp_mythic"},{"entr_zenith","jen_extraordinary","jen_transcendent","crp_exomythic"},{"jen_omegatranscendent","jen_omnipotent","crp_all"}}
 				_raritiesstring = {"Common", "Uncommon", "Rare", "cry_epic", "Legendary", "cry_exotic","entr_entropic","jen_extraordinary"}
 				if next(SMODS.find_mod('jen')) then
 					_raritiesstring[7] = "jen_wondrous"
+				end
+				if next(SMODS.find_mod('cryptposting')) then
+					_raritiesstring[7] = "crp_mythic"
+					_raritiesstring[8] = "crp_exomythic"
+					table.insert(_raritylist, 2, "crp_2common4me")
+					table.insert(_raritiesstring, 2, "crp_2common4me")
+					table.insert(_raritylist, 4, "crp_unrare")
+					table.insert(_raritiesstring, 4, "crp_unrare")
+					table.insert(_raritylist, 11, "crp_2exomythic4me")
+					table.insert(_raritiesstring,"crp_2exomythic4me")
+					table.insert(_raritylist, 12, "crp_22exomythic4mecipe")
+					table.insert(_raritiesstring,"crp_22exomythic4mecipe")
+					table.insert(_raritylist, 13, "crp_exomythicepicawesomeuncommon2mexotic22exomythic4mecipe")
+					table.insert(_raritiesstring,"crp_exomythicepicawesomeuncommon2mexotic22exomythic4mecipe")
 				end
 			end
 			for index, value in ipairs(_raritylist) do
@@ -415,7 +445,7 @@ SMODS.Joker {
         name = "Crimson Heart",
         text = {
             "One random {C:attention}Joker{} is {C:attention}marked",
-			"every hand, {C:attention}marked Jokers{}",
+			"every hand, marked {C:attention}Jokers{}",
 			"retrigger {C:attention}#1#{} additional times",
         }
     },
@@ -449,6 +479,9 @@ SMODS.Joker {
 		end
 		if context.retrigger_joker_check and not context.retrigger_joker and context.other_card then
 			if context.other_card.ability and context.other_card.ability.finitycrimsonheartmark then
+				if card.ability.extra.retriggers > 40 then
+					card.ability.extra.retriggers = 40
+				end
 				return {
 					message = localize("k_again_ex"),
 					repetitions = card.ability.extra.retriggers,
@@ -513,7 +546,7 @@ SMODS.Joker {
         name = "Cerulean Bell",
         text = {
             "One random card in hand is {C:attention}marked,",
-			"{C:attention}marked{} cards permanently gain",
+			"marked cards permanently gain",
 			"{X:mult,C:white}X#1#{} Mult when scored"
         }
     },
@@ -690,7 +723,7 @@ SMODS.DrawStep {
 				-0.2
 			)
         end
-		if self.config.center and (self.ability.finitycrimsonheartmark or self.ability.finityceruleanbellmark or self.ability.finityrazzleraindropmark) and self.finity and self.finity.floating_sprite_mark then
+		if self.config.center and (self.ability.finitycrimsonheartmark or self.ability.finityceruleanbellmark or self.ability.finityrazzleraindropmark or self.ability.finitysaffronshieldmark) and self.finity and self.finity.floating_sprite_mark then
             local scale_mod = 0.07 + 0.02*math.cos(1.8*G.TIMERS.REAL) + 0.00*math.cos((G.TIMERS.REAL - math.floor(G.TIMERS.REAL))*math.pi*14)*(1 - (G.TIMERS.REAL - math.floor(G.TIMERS.REAL)))^3
 			local rotate_mod = 0
 
@@ -805,6 +838,22 @@ function Game:start_run(args)
 			G.playing_cards[i].T.h,
 			G.ASSET_ATLAS['finity_marks'],
 			{ x = 2, y = 0 }
+			)
+			G.playing_cards[i].finity.floating_sprite_mark.role.draw_major = G.playing_cards[i]
+			G.playing_cards[i].finity.floating_sprite_mark.states.hover.can = false
+			G.playing_cards[i].finity.floating_sprite_mark.states.click.can = false
+		end
+	end
+	for i = 1, #G.playing_cards do
+		if G.playing_cards[i].ability.finitysaffronshieldmark then
+			G.playing_cards[i].finity = {}
+			G.playing_cards[i].finity.floating_sprite_mark = Sprite(
+			G.playing_cards[i].T.x,
+			G.playing_cards[i].T.y,
+			G.playing_cards[i].T.w,
+			G.playing_cards[i].T.h,
+			G.ASSET_ATLAS['finity_marks'],
+			{ x = 5, y = 0 }
 			)
 			G.playing_cards[i].finity.floating_sprite_mark.role.draw_major = G.playing_cards[i]
 			G.playing_cards[i].finity.floating_sprite_mark.states.hover.can = false
@@ -1061,7 +1110,7 @@ function get_new_boss()
 		elseif G.GAME.selected_back.name == "b_finity_challenger" or G.GAME.selected_sleeve == "sleeve_finity_challenger" then
 			local eligible_bosses = {}
 			for k, v in pairs(G.P_BLINDS) do
-				if v.boss and v.boss.showdown and not (string.sub(k, 1, 11) == "bl_jen_epic" and G.GAME.round_resets.ante <= 14) then
+				if v.boss and v.boss.showdown and not (string.sub(k, 1, 11) == "bl_jen_epic" and G.GAME.round_resets.ante <= 14) and not (string.sub(k, 1, 12) == "bl_unik_epic" and G.GAME.round <= 40) and not (string.sub(k, 1, 17) == "bl_unik_legendary" and G.GAME.round <= 90) then
 					eligible_bosses[k] = true
 				end
 			end
@@ -1255,62 +1304,77 @@ SMODS.Joker {
     cost = 10,
 	soul_pos = { x = 1, y = 0 },
 	calculate = function(self, card, context)
-		if (context.end_of_round and context.main_eval and not context.repetition) or context.forcetrigger then
-			local virus_pos
-			for i = 1, #G.jokers.cards do
-				if G.jokers.cards[i] == (context.blueprint_card or card) then
-					virus_pos = i
-					break
-				end
+		if not ((context.end_of_round and context.cardarea == G.jokers) or context.forcetrigger) 
+			or context.repetition then return end
+	
+		local function find_card_position(target_card)
+			for i, joker in ipairs(G.jokers.cards) do
+				if joker == target_card then return i end
 			end
-			if not virus_pos then
-				for i = 1, #G.jokers.cards do
-					if G.jokers.cards[i].config.center.key == "j_payasaka_cast" then
-						local area = G["payasaka_cast_jokers_"..tostring(G.jokers.cards[i].sort_id)] or nil
-						if area then
-							for j = 1, #area.cards do
-								if area.cards[j] == (context.blueprint_card or card) then
-									virus_pos = i
-									break
-								end
-							end
+			for i, joker in ipairs(G.jokers.cards) do
+				if joker.config.center.key == "j_payasaka_cast" then
+					local area = G["payasaka_cast_jokers_"..tostring(joker.sort_id)]
+					if area then
+						for _, c in ipairs(area.cards) do
+							if c == target_card then return i end
 						end
 					end
 				end
 			end
-			if virus_pos and G.jokers.cards[virus_pos+1] then
-				local _raritylist = {{1,"jen_junk","akyrs_supercommon"},{2,"cry_candy"},{3,"poke_safari","payasaka_ahead"},{"cry_epic","mf_bossblind"},{4,"finity_showdown","poke_mega","entr_reverse_legendary","payasaka_daeha"},"cry_exotic"}
-				local _rarity = G.jokers.cards[virus_pos+1].config.center.rarity
-				local _newrarity
-				local _raritiesstring = {"Common", "Uncommon", "Rare", "cry_epic", "Legendary", "cry_exotic"}
-				if next(SMODS.find_mod('entr')) and not next(SMODS.find_mod('jen')) then
-					table.insert(_raritiesstring, "entr_entropic")
-				end
-				if next(SMODS.find_mod('jen')) then
-					table.insert(_raritiesstring, "jen_wondrous")
-				end
-				for index, value in ipairs(_raritylist) do
-					if value == _rarity then
-						_newrarity = index + 1
-						_rarity = index
+			return nil
+		end
+		local virus_pos = find_card_position(context.blueprint_card or card)
+		if not virus_pos then return end
+		local next_card = G.jokers.cards[virus_pos + 1]
+		if not next_card or next_card.ability.eternal then return end
+	
+		local raritylist = {
+			{1, "akyrs_supercommon", "playbook_the", "crp_trash", "crp_:3", "crp_common_2"},
+			{2, "cry_candy", "akyrs_emerald", "crp_uncommon_2"},
+			{3, "poke_safari", "payasaka_ahead", "crp_rare_2"},
+			{"cry_epic", "mf_bossblind", "crp_cipe"},
+			{4, "finity_showdown", "poke_mega", "entr_reverse_legendary", "payasaka_daeha"},
+			{"cry_exotic", "crp_exotic_2", "unik_unik_legendary_blind_finity"}
+		}
+		local rarities = {"Common", "Uncommon", "Rare", "cry_epic", "Legendary", "cry_exotic"}
+
+		if next(SMODS.find_mod('playbook')) and not next(SMODS.find_mod('entr')) and not next(SMODS.find_mod('jen')) then
+			table.insert(rarities, "playbook_playful")
+		end
+		if next(SMODS.find_mod('entr')) and not next(SMODS.find_mod('jen')) then
+			table.insert(rarities, "entr_entropic")
+		end
+		if next(SMODS.find_mod('jen')) then
+			table.insert(rarities, "jen_wondrous")
+		end
+		if next(SMODS.find_mod('cryptposting')) then
+			table.insert(rarities, 2, "crp_2common4me")
+			table.insert(rarities, 4, "crp_unrare")
+			table.insert(raritylist, 2, "crp_2common4me")
+			table.insert(raritylist, 4, "crp_unrare")
+			rarities[7] = "crp_mythic"
+		end
+		local current_rarity = next_card.config.center.rarity
+		local new_rarity_index = nil
+		for index, tier in ipairs(raritylist) do
+			if type(tier) == "table" then
+				for _, val in ipairs(tier) do
+					if val == current_rarity then
+						new_rarity_index = index + 1
 						break
-					elseif type(value) == "table" then
-						for sub_index, sub_value in ipairs(value) do
-							if sub_value == _rarity then
-								_newrarity = index + 1
-								_rarity = index
-								break
-							end
-						end
 					end
 				end
-				if _newrarity and _newrarity <= #_raritiesstring and not G.jokers.cards[virus_pos+1].ability.eternal then
-					card:juice_up()
-					G.jokers.cards[virus_pos+1]:start_dissolve()
-					SMODS.add_card { set = 'Joker', rarity = _raritiesstring[_newrarity]}
-					card:juice_up(0.3, 0.5)
-				end
+			elseif tier == current_rarity then
+				new_rarity_index = index + 1
+				break
 			end
+			if new_rarity_index then break end
+		end
+		if new_rarity_index and new_rarity_index <= #rarities then
+			card:juice_up()
+			next_card:start_dissolve()
+			SMODS.add_card { set = 'Joker', rarity = rarities[new_rarity_index] }
+			card:juice_up(0.3, 0.5)
 		end
 	end
 }
@@ -1498,7 +1562,7 @@ SMODS.Joker {
         text = {
             "Gains {X:mult,C:white}X#2#{} Mult if a {C:hearts}#3#{C:spades}#4#{C:diamonds}#5#{C:clubs}#6#{} suit",
 			"card is scored and {C:attention}mark{} it, cards",
-			"{C:attention}marked{} this way count as any suit",
+			"marked this way count as any suit",
 			"{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)"
         }
     },
@@ -1928,6 +1992,390 @@ SMODS.Rank {
 	loc_txt = {name = "V",}
 }
 end
+--ortalab crossmod jokers
+if next(SMODS.find_mod('ortalab')) then
+SMODS.Joker{
+    name = "Celadon Clubs",
+    key = "celadonclubs",
+    loc_txt = {
+        ['name'] = 'Celadon Clubs',
+        ['text'] = {
+			"Retrigger all {C:attention}even{} cards once,",
+			"{C:attention}odd{} cards are destroyed after",
+			"scoring, {C:attention}face{} cards permanently",
+			"gain {X:chips,C:white}X#1#{} Chips when scored"
+        }
+    },
+	config = {
+		extra = {exchips = 0.2}
+	},
+	loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.exchips } }
+    end,
+    pos = {
+        x = 0,
+        y = 0
+    },
+	soul_pos = { x = 1, y = 0 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+    calculate = function(self, card, context)
+        if context.repetition and (context.cardarea == G.play or context.cardarea == G.hand) then
+            if ((context.other_card:get_id() % 2 == 0) and not context.other_card:is_face()) and not (context.other_card:get_id() == 14) then
+                return {
+                    repetitions = 1,
+                    message = localize('k_again_ex')
+                }
+            end
+        end
+        if context.individual and context.cardarea == G.play and not context.blueprint then
+            if ((context.other_card:get_id() % 2 == 1) and not context.other_card:is_face()) or (context.other_card:get_id() == 14) then
+				context.other_card.destroy_me_pls = true
+            elseif context.other_card:is_face() then
+                context.other_card.ability.perma_x_chips = context.other_card.ability.perma_x_chips or 1
+				context.other_card.ability.perma_x_chips = context.other_card.ability.perma_x_chips + card.ability.extra.exchips
+				return {
+					extra = {message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
+					colour = G.C.CHIPS,
+					card = card
+				}
+            end
+        end
+		if context.destroying_card and context.destroying_card.destroy_me_pls and not context.blueprint then
+			return {
+					remove = true,
+                    message = "Destroyed!"
+				}
+		end
+    end
+}
+SMODS.Joker{
+    name = "Caramel Coin",
+    key = "caramelcoin",
+    config = {
+        extra = {
+            bonushands = 0
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Caramel Coin',
+        ['text'] = {
+            "Gains {C:attention}+1{} hand size if played",
+            "hand contains a {C:attention}Straight Flush{},",
+            "{C:attention}Flush House{} or {C:attention}Flush Five{}"
+        }
+    },
+    pos = {
+        x = 0,
+        y = 1
+    },
+	soul_pos = { x = 1, y = 1 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+    loc_vars = function(self, info_queue, card)
+        return {vars = {}}
+    end,
+    calculate = function(self, card, context)
+        if context.cardarea == G.jokers and context.joker_main then
+            if (next(context.poker_hands["Straight Flush"])) or (next(context.poker_hands["Flush House"])) or (next(context.poker_hands["Flush Five"])) then
+                card.ability.extra.bonushands = (card.ability.extra.bonushands) + 1
+                return {
+                    func = function()
+                card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = "+"..tostring(1).." Hand Size"})
+                G.hand:change_size(1)
+                return true
+            end
+                }
+            end
+        end
+    end,
+	remove_from_deck = function(self, card, from_debuff)
+		if card.ability.extra.bonushands > 0 then
+			G.hand:change_size(-card.ability.extra.bonushands)
+		end
+	end
+}
+SMODS.Joker{
+    name = "Saffron Shield",
+    key = "saffronshield",
+    config = {
+        extra = {
+		odds = 2
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Saffron Shield',
+        ['text'] = {
+            "{C:green}#1# in #2#{} cards drawn become",
+            "{C:attention}marked{}, cards marked this way",
+            "cannot be debuffed or flipped"
+        }
+    },
+    pos = {
+        x = 0,
+        y = 2
+    },
+	soul_pos = { x = 1, y = 2 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+
+    loc_vars = function(self, info_queue, card)
+        return{ vars = {G.GAME.probabilities.normal,card.ability.extra.odds}}
+    end,
+
+    calculate = function(self, card, context)
+        if context.hand_drawn and not context.blueprint then
+			for _, v in ipairs(G.hand.cards) do
+				if not v.ability.finitysaffronchecked and not v.ability.finitysaffronshieldmark then
+					v.ability.finitysaffronchecked = true
+					if pseudorandom('saffronshield') < G.GAME.probabilities.normal / card.ability.extra.odds then
+						card:juice_up()
+						v:juice_up()
+						v.ability.finitysaffronshieldmark = true
+						v.finity = {}
+						v.finity.floating_sprite_mark = Sprite(
+						v.T.x,
+						v.T.y,
+						v.T.w,
+						v.T.h,
+						G.ASSET_ATLAS['finity_marks'],
+						{ x = 5, y = 0 }
+						)
+						v.finity.floating_sprite_mark.role.draw_major = v
+						v.finity.floating_sprite_mark.states.hover.can = false
+						v.finity.floating_sprite_mark.states.click.can = false
+					end
+				end
+			end
+        end
+		if context.end_of_round then
+			for i = 1, #G.playing_cards do
+				G.playing_cards[i].ability.finitysaffronchecked = nil
+			end
+		end
+    end
+}
+SMODS.Joker{
+    name = "Rouge Rose",
+    key = "rougerose",
+    config = {
+        extra = {
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Rouge Rose',
+        ['text'] = {
+            [1] = 'Sell this card to',
+            [2] = 'set Ante to {C:attention}1{}'
+        }
+    },
+    pos = {
+        x = 0,
+        y = 3
+    },
+	soul_pos = { x = 1, y = 3 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = false,
+    eternal_compat = false,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+
+    loc_vars = function(self, info_queue, card)
+        return {vars = {}}
+    end,
+
+    calculate = function(self, card, context)
+        if context.selling_self and not context.blueprint then
+			ease_ante(-G.GAME.round_resets.ante + 1)
+        end
+    end
+}
+SMODS.Joker{
+    name = "Silver Sword",
+    key = "silversword",
+    config = {
+        extra = {
+            xmult = 0.2
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Silver Sword',
+        ['text'] = {
+            [1] = '{X:mult,C:white}X#1#{} Mult per owned joker,',
+            [2] = 'create a {C:dark_edition}Negative{} {C:attention}Silver Sword{}',
+            [3] = 'if not {C:dark_edition}Negative{} when beating a',
+            [4] = 'blind with the {C:attention}first hand{} of round',
+            [5] = '{C:inactive,s:0.8}(Currently {}{X:mult,C:white,s:0.8}X#2#{}{C:inactive,s:0.8} Mult){}'
+        }
+    },
+    pos = {
+        x = 0,
+        y = 4
+    },
+	soul_pos = { x = 1, y = 4 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.xmult,1 + (card.ability.extra.xmult * (G.jokers and #G.jokers.cards or 1))}}
+    end,
+
+    calculate = function(self, card, context)
+        if context.after and context.main_eval and context.cardarea == G.jokers and not context.blueprint and ((card.edition or {}).key ~= 'e_negative') then
+            if G.GAME.current_round.hands_played == 0 and to_big(G.GAME.chips) + to_big(hand_chips) * to_big(mult) > to_big(G.GAME.blind.chips) then
+                return {
+                    func = function()
+            local created_joker = true
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        local joker_card = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_finity_silversword')
+                        joker_card:set_edition("e_negative", true)
+                        joker_card:add_to_deck()
+                        G.jokers:emplace(joker_card)
+                        return true
+                    end
+                }))
+            if created_joker then
+                card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_joker'), colour = G.C.BLUE})
+            end
+            return true
+        end
+                }
+            end
+        end
+		if context.joker_main or context.forcetrigger then
+            return {
+                Xmult_mod = 1 + (card.ability.extra.xmult * #G.jokers.cards),
+                message = localize { type = 'variable', key = 'a_xmult', vars = { 1 + (card.ability.extra.xmult * #G.jokers.cards) } }
+            }
+        end
+    end
+}
+end
+--cardsauce crossmod jokers
+if next(SMODS.find_mod('Cardsauce')) then
+SMODS.Joker{
+    name = "Mocha Mike",
+    key = "mochamike",
+    config = {
+        extra = {
+            times = 1
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Mocha Mike',
+        ['text'] = {
+            [1] = 'Creates {C:attention}#1#{} Negative {C:planet}Planet{}',
+            [2] = '#2# for played {C:attention}poker hand{}'
+        }
+    },
+    pos = {
+        x = 0,
+        y = 0
+    },
+	soul_pos = { x = 1, y = 0 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'cardsaucebossjokers',
+
+    loc_vars = function(self, info_queue, card)
+		local jsfhjsafh = "card"
+		if card.ability.extra.times > 1 then
+			jsfhjsafh = "cards"
+		end
+        return {vars = {card.ability.extra.times,jsfhjsafh}}
+    end,
+
+    calculate = function(self, card, context)
+        if context.cardarea == G.jokers and context.joker_main then
+                local created_planet = true
+				local _handname, _played, _order = 'High Card', -1, 100
+				for k, v in pairs(G.GAME.hands) do
+					if v.played > _played or (v.played == _played and _order > v.order) then
+						_played = v.played
+						_handname = k
+					end
+				end
+				for k, v in pairs(G.P_CENTER_POOLS.Planet) do
+					if v.config.hand_type == _handname then
+						for i = 1, card.ability.extra.times do
+							G.E_MANAGER:add_event(Event({
+							func = function()
+								local planet_card = create_card('Planet', G.consumeables, nil, nil, nil, true, v.key)
+								planet_card:set_edition("e_negative", true)
+								planet_card:add_to_deck()
+								G.consumeables:emplace(planet_card)
+								return true
+							end
+							}))
+						end
+					end
+				end
+                return {
+                    message = created_planet and localize('k_plus_planet') or nil
+                }
+        end
+    end
+}
+SMODS.Joker{
+    name = "Felt Fortress",
+    key = "feltfortress",
+    loc_txt = {
+        ['name'] = 'Felt Fortress',
+        ['text'] = {
+            [1] = 'Doubles your {C:attention}current score{}'
+        }
+    },
+    pos = {
+        x = 0,
+        y = 1
+    },
+	soul_pos = { x = 1, y = 1 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'cardsaucebossjokers',
+	calculate = function(self, card, context)
+		if (context.joker_main or context.forcetrigger) and G.GAME.chips > 0 then
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
+				G.GAME.chips = G.GAME.chips * 2
+			return true end }))
+            return {
+                message = "doubled"
+            }
+        end
+	end
+}
+end
 
 if next(SMODS.find_mod('partner')) then
 Partner_API.Partner{
@@ -2200,7 +2648,7 @@ Partner_API.Partner{
         text = {
             "One random card in hand is",
 			"{C:attention}marked{} every hand, {C:attention}retrigger",
-			"{C:attention}marked{} cards #1#"
+			"marked cards #1#"
         },
 		unlock={
             "Win a run with",
@@ -2314,6 +2762,13 @@ G.localization.descriptions.Other['razzlemark'] =  {
         name = 'Razzle Mark',
         text = {"Can be used",
 				"as any suit"
+			},
+    }
+G.localization.descriptions.Other['saffronmark'] =  {
+        name = 'Saffron Mark',
+        text = {"Cannot be",
+				"debuffed or",
+				"flipped"
 			},
     }
 
