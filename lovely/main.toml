@@ -115,8 +115,10 @@ target = "card.lua"
 pattern = "if self.ability.rental then badges[#badges + 1] = 'rental' end"
 position = "after"
 payload = '''
-if self.ability.finitycrimsonheartmark then badges[#badges + 1] = 'heart_mark' end
-if self.ability.finityceruleanbellmark then badges[#badges + 1] = 'bell_mark' end
+if self.ability.finitycrimsonheartmark and self.ability.finitycrimsonheartmark ~= "lovesick" then badges[#badges + 1] = 'heart_mark' end
+if self.ability.finitycrimsonheartmark and self.ability.finitycrimsonheartmark == "lovesick" then badges[#badges + 1] = 'heart_mark_partner' end
+if self.ability.finityceruleanbellmark and self.ability.finityceruleanbellmark ~= "controlling" then badges[#badges + 1] = 'bell_mark' end
+if self.ability.finityceruleanbellmark and self.ability.finityceruleanbellmark == "controlling" then badges[#badges + 1] = 'bell_mark_partner' end
 if self.ability.finityrazzleraindropmark then badges[#badges + 1] = 'raindrop_mark' end
 if self.ability.finitysaffronshieldmark then badges[#badges + 1] = 'shield_mark' end
 '''
@@ -129,7 +131,9 @@ pattern = "if v == 'pinned_left' then info_queue[#info_queue+1] = {key = 'pinned
 position = "before"
 payload = '''
 if v == 'heart_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'crimsonmark'} end
+if v == 'heart_mark_partner' then info_queue[#info_queue+1] = {set = 'Other', key = 'crimsonmarkpartner'} end
 if v == 'bell_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'ceruleanmark'} end
+if v == 'bell_mark_partner' then info_queue[#info_queue+1] = {set = 'Other', key = 'ceruleanmarkpartner'} end
 if v == 'raindrop_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'razzlemark'} end
 if v == 'shield_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'saffronmark'} end
 '''
@@ -144,7 +148,7 @@ payload = '''
 badges=badges or {}
 local _markbadges = {}
 	for k, v in ipairs(badges) do
-		if v == 'heart_mark' or v == 'bell_mark' or v == 'raindrop_mark' or v == 'shield_mark' then
+		if v == 'heart_mark' or v == 'bell_mark' or v == 'raindrop_mark' or v == 'shield_mark' or v == 'heart_mark_partner' or v == 'bell_mark_partner' then
 			_markbadges[k] = v
 		end
 	end

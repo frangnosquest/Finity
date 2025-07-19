@@ -5,6 +5,8 @@ SMODS.Atlas({key = 'crybossjokers', path = 'compat/cryptid.png', px = 71, py = 9
 SMODS.Atlas({key = 'akyrsbossjokers', path = 'compat/aikoyorisshenanigans.png', px = 71, py = 95})
 SMODS.Atlas({key = 'ortalabbossjokers', path = 'compat/ortalab.png', px = 71, py = 95})
 SMODS.Atlas({key = 'cardsaucebossjokers', path = 'compat/cardsauce.png', px = 71, py = 95})
+SMODS.Atlas({key = 'pokermonbossjokers', path = 'compat/pokermon.png', px = 71, py = 95})
+SMODS.Atlas({key = 'pokermonboss_shinyjokers', path = 'compat/pokermonshiny.png', px = 71, py = 95})
 SMODS.Atlas({key = 'consumables', path = 'consumables.png', px = 71, py = 95})
 SMODS.Atlas({key = 'marks', path = 'marks.png', px = 71, py = 95})
 SMODS.Atlas({key = 'backs', path = 'backs.png', px = 71, py = 95})
@@ -373,10 +375,9 @@ SMODS.Joker {
     loc_txt = {
         name = "Amber Acorn",
         text = {
-            "Gains {X:mult,C:white}X#2#{} Mult per owned",
-			"{C:attention}Joker{} at end of round, all other",
+            "Gains {X:mult,C:white}X#2#{} Mult for each {C:attention}Joker{}",
+			"card when {C:attention}Blind{} is defeated, all other",
 			"{C:attention}Jokers{} are {C:attention}pinned to the left",
-			"until this is sold or destroyed",
 			"{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)"
         }
     },
@@ -452,7 +453,7 @@ SMODS.Joker {
 	config = {
 		extra = {retriggers = 2},
         hand_played = true,
-		identifier = 0
+		identifier = tostring(0)
     },
 	loc_vars = function(self, info_queue, card)
         return {
@@ -469,8 +470,8 @@ SMODS.Joker {
     cost = 10,
 	soul_pos = { x = 1, y = 0 },
 	set_ability = function(self, card, initial, delay_sprites)
-		if card.ability.identifier == 0 then
-			card.ability.identifier = pseudorandom('crimsonheart', 1, 999999999999)
+		if card.ability.identifier == tostring(0) then
+			card.ability.identifier = tostring(pseudorandom('crimsonheart', 1, 999999999999))
 		end
     end,
 	calculate = function(self, card, context)
@@ -551,7 +552,7 @@ SMODS.Joker {
         }
     },
 	config = {
-		identifier = 0,
+		identifier = tostring(0),
 		xmultbonus = 2
     },
 	loc_vars = function(self, info_queue, card)
@@ -569,8 +570,8 @@ SMODS.Joker {
     cost = 10,
 	soul_pos = { x = 1, y = 1 },
 	set_ability = function(self, card, initial, delay_sprites)
-		if card.ability.identifier == 0 then
-			card.ability.identifier = pseudorandom('ceruleanbell', 1, 999999999999)
+		if card.ability.identifier == tostring(0) then
+			card.ability.identifier = tostring(pseudorandom('ceruleanbell', 1, 999999999999))
 		end
     end,
 	calculate = function(self, card, context)
@@ -2376,6 +2377,102 @@ SMODS.Joker{
 	end
 }
 end
+--pokermon crossmod joker
+if next(SMODS.find_mod('Pokermon')) then
+SMODS.Joker{
+    name = "Chartreuse Chamber",
+    key = "cgoosejoker",
+    config = {extra = {first = true, ptype = "Bird"}},
+    loc_txt = {
+        ['name'] = 'Chartreuse Chamber',
+        ['text'] = {
+			"Changes type every round, {C:pink}Energize{}",
+            "all other Jokers {C:attention}sharing{} its type",
+            "when {C:attention}blind{} is defeated",
+			"{C:inactive}(Ignores energy limits)"
+        }
+    },
+	loc_vars = function(self, info_queue, card)
+		if card.ability.extra.ptype == "Bird" then
+			info_queue[#info_queue+1] = {set = 'Other', key = 'Bird'}
+		end
+	end,
+    pos = {
+        x = 0,
+        y = 0
+    },
+	soul_pos = { x = 1, y = 0 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = false,
+    eternal_compat = false,
+    unlocked = true,
+    discovered = true,
+    atlas = 'finity_pokermonbossjokers',
+	poke_custom_prefix = "finity_pokermonboss",
+	--set_badges = poke_set_type_badge,
+	add_to_deck = function(self, card, from_debuff)
+		local poketype_list = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Colorless", "Dark", "Metal", "Fairy", "Dragon", "Earth"}
+		local typesinjokers = {}
+		for i = 1, #G.jokers.cards do
+			if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
+				for _, value in ipairs(poketype_list) do
+					if value == G.jokers.cards[i].ability.extra.ptype then
+						table.insert(typesinjokers, value)
+						break
+					end
+				end
+			end
+		end
+		if #typesinjokers > 0 then
+			apply_type_sticker(card, pseudorandom_element(typesinjokers))
+		else
+			apply_type_sticker(card, pseudorandom_element(poketype_list))
+		end
+	end,
+    calculate = function(self, card, context)
+        if context.setting_blind and not context.blueprint then
+			if card.ability.extra.first == true then
+				card.ability.extra.first = false
+			else
+				local poketype_list = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Colorless", "Dark", "Metal", "Fairy", "Dragon", "Earth"}
+				local typesinjokers = {}
+				for i = 1, #G.jokers.cards do
+					if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
+						for _, value in ipairs(poketype_list) do
+							if value == G.jokers.cards[i].ability.extra.ptype then
+								table.insert(typesinjokers, value)
+								break
+							end
+						end
+					end
+				end
+				local chosentype
+				if #typesinjokers > 0 then
+					chosentype = pseudorandom_element(typesinjokers)
+				else
+					chosentype = pseudorandom_element(poketype_list)
+				end
+				apply_type_sticker(card, chosentype)
+				return {
+                    message = chosentype,
+                    colour = G.ARGS.LOC_COLOURS.pink
+                }
+			end
+        end
+		if context.end_of_round and context.main_eval and not context.repetition and context.cardarea == G.jokers then
+			if card.ability.extra.first == true then
+				card.ability.extra.first = false
+			end
+			for i = 1, #G.jokers.cards do
+				if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype and G.jokers.cards[i].ability.extra.ptype == card.ability.extra.ptype and G.jokers.cards[i] ~= card then
+					increment_energy(G.jokers.cards[i], card.ability.extra.ptype)
+				end
+			end
+		end
+    end
+}
+end
 
 if next(SMODS.find_mod('partner')) then
 Partner_API.Partner{
@@ -2752,10 +2849,22 @@ G.localization.descriptions.Other['crimsonmark'] =  {
 				"{C:red}Crimson Heart"
 			},
     }
+G.localization.descriptions.Other['crimsonmarkpartner'] =  {
+        name = 'Mark',
+        text = {"Marked by",
+				"{C:red}The Lovesick"
+			},
+    }
 G.localization.descriptions.Other['ceruleanmark'] =  {
         name = 'Mark',
         text = {"Marked by",
 				"{C:blue}Cerulean Bell"
+			},
+    }
+	G.localization.descriptions.Other['ceruleanmarkpartner'] =  {
+        name = 'Mark',
+        text = {"Marked by",
+				"{C:blue}The Controlling"
 			},
     }
 G.localization.descriptions.Other['razzlemark'] =  {
