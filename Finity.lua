@@ -64,7 +64,8 @@ FinisherBossBlindStringMap = {
 	["bl_ortalab_rouge_rose"] = {"j_finity_rougerose","Rouge Rose"},
 	["bl_ortalab_silver_sword"] = {"j_finity_silversword","Silver Sword"},
 	["bl_csau_mochamike"] = {"j_finity_mochamike","Mocha Mike"},
-	["bl_csau_feltfortress"] = {"j_finity_feltfortress","Felt Fortress"}
+	["bl_csau_feltfortress"] = {"j_finity_feltfortress","Felt Fortress"},
+	["bl_poke_cgoose"] = {"j_finity_cgoosejoker","Chartreuse Chamber"}
 	}
 
 --this table assigns sprites for the Taunting deck and is completely optional	
