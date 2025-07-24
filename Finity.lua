@@ -7,6 +7,7 @@ SMODS.Atlas({key = 'ortalabbossjokers', path = 'compat/ortalab.png', px = 71, py
 SMODS.Atlas({key = 'cardsaucebossjokers', path = 'compat/cardsauce.png', px = 71, py = 95})
 SMODS.Atlas({key = 'pokermonbossjokers', path = 'compat/pokermon.png', px = 71, py = 95})
 SMODS.Atlas({key = 'pokermonboss_shinyjokers', path = 'compat/pokermonshiny.png', px = 71, py = 95})
+SMODS.Atlas({key = 'paperbackbossjokers', path = 'compat/paperback.png', px = 71, py = 95})
 SMODS.Atlas({key = 'consumables', path = 'consumables.png', px = 71, py = 95})
 SMODS.Atlas({key = 'marks', path = 'marks.png', px = 71, py = 95})
 SMODS.Atlas({key = 'backs', path = 'backs.png', px = 71, py = 95})
@@ -65,7 +66,8 @@ FinisherBossBlindStringMap = {
 	["bl_ortalab_silver_sword"] = {"j_finity_silversword","Silver Sword"},
 	["bl_csau_mochamike"] = {"j_finity_mochamike","Mocha Mike"},
 	["bl_csau_feltfortress"] = {"j_finity_feltfortress","Felt Fortress"},
-	["bl_poke_cgoose"] = {"j_finity_cgoosejoker","Chartreuse Chamber"}
+	["bl_poke_cgoose"] = {"j_finity_cgoosejoker","Chartreuse Chamber"},
+	["bl_paperback_taupe_treble"] = {"j_finity_taupetreble","Taupe Treble"}
 	}
 
 --this table assigns sprites for the Taunting deck and is completely optional	
@@ -99,6 +101,7 @@ FinisherBossBlinddecksprites = {
 	["bl_ortalab_silver_sword"] = {"finity_blinddeck",{ x = 4, y = 3 }},
 	["bl_csau_mochamike"] = {"finity_blinddeck",{ x = 0, y = 4 }},
 	["bl_csau_feltfortress"] = {"finity_blinddeck",{ x = 1, y = 4 }},
+	["bl_poke_cgoose"] = {"finity_blinddeck",{ x = 2, y = 4 }}
 }
 
 --another optional feature is having the boss joker cards appear and say a quip instead of jimbo when losing to their respective blinds.
@@ -129,6 +132,7 @@ FinisherBossBlindQuips = {
 	["bl_akyrs_final_salient_stream"] = {"salient",3},
 	["bl_akyrs_final_luminous_lemonade"] = {"luminous",3},
 	["bl_akyrs_final_glorious_glaive"] = {"glorious",3,3},
+	["bl_poke_cgoose"] = {"chartreuse",3}
 	}
 	
 --and that's all you have to do with stuff here, create your boss joker, make sure to give it the showdown rarity
@@ -491,7 +495,7 @@ SMODS.Joker {
 				}
 			end
 		end
-		if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or context.end_of_round then
+		if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or (context.end_of_round and context.main_eval) then
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i].ability.finitycrimsonheartmark and G.jokers.cards[i].ability.finitycrimsonheartmark == card.ability.identifier then
 					G.jokers.cards[i].ability.finitycrimsonheartmark = nil
@@ -576,7 +580,7 @@ SMODS.Joker {
 		end
     end,
 	calculate = function(self, card, context)
-		if (context.hand_drawn and not context.blueprint) or context.end_of_round then
+		if (context.hand_drawn and not context.blueprint) or (context.end_of_round and context.main_eval) then
 			for i = 1, #G.playing_cards do
 				if G.playing_cards[i].ability.finityceruleanbellmark and G.playing_cards[i].ability.finityceruleanbellmark == card.ability.identifier then
 					G.playing_cards[i].ability.finityceruleanbellmark = nil
@@ -1017,6 +1021,7 @@ function Game:init_game_object()
 		G.PROFILES[G.SETTINGS.profile]["finityblinddeckdata"] = {}
 	end
 	if next(SMODS.find_mod('aikoyorisshenanigans')) then
+		finity_apply_akyrs_hook()
 		local finitycardcompat = {}
 		if next(SMODS.find_mod('paperback')) then
 			finitycardcompat = {
@@ -1051,6 +1056,20 @@ function Game:init_game_object()
 		end
 	end
 	return ret
+end
+
+finity_apply_akyrs_hook = function()
+    if not AKYRS or not AKYRS.rank_to_atlas then return false end
+
+    local old = AKYRS.rank_to_atlas
+    AKYRS.rank_to_atlas = function(rank_key)
+        if rank_key == "finity_V" then
+            return G.ASSET_ATLAS['finity_vranklccompat'], { x = 2, y = 1 }
+        else
+            return old(rank_key)
+        end
+    end
+    return true
 end
 		
 if CardSleeves then
@@ -1214,7 +1233,7 @@ SMODS.Joker {
                 message = "START!",
             }
 		end
-		if (context.end_of_round and context.main_eval and not context.repetition) or context.forcetrigger then
+		if (context.end_of_round and context.main_eval) or context.forcetrigger then
 			card.ability.inblind = 0
 			if (G.TIMERS.REAL - card.ability.start <= 30) or context.forcetrigger then
 				card:start_dissolve()
@@ -1306,7 +1325,7 @@ SMODS.Joker {
     cost = 10,
 	soul_pos = { x = 1, y = 0 },
 	calculate = function(self, card, context)
-		if not ((context.end_of_round and context.cardarea == G.jokers) or context.forcetrigger) 
+		if not ((context.end_of_round and context.main_eval and context.cardarea == G.jokers) or context.forcetrigger) 
 			or context.repetition then return end
 	
 		local function find_card_position(target_card)
@@ -1610,7 +1629,7 @@ SMODS.Joker {
                 message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
             }
         end
-		if context.end_of_round and not context.repetition and context.game_over == false and not context.blueprint then
+		if context.end_of_round and context.main_eval and context.game_over == false and not context.blueprint then
 			card.ability.suit = pseudorandom_element({ "Spades", "Hearts", "Clubs", "Diamonds" })
 		end
 		if context.individual and context.cardarea == G.play and not context.blueprint then
@@ -1719,7 +1738,7 @@ SMODS.Joker {
 				}
 			end
 		end
-		if context.end_of_round and not context.repetition and not context.blueprint then
+		if context.end_of_round and context.main_eval and not context.blueprint then
 			local rank_choices = {"Ace",2,3,4,5,6,7,8,9,10,"Jack","Queen","King"}
 			local toremove = pseudorandom_element(rank_choices)
 			card.ability.ranks.first = toremove
@@ -2165,7 +2184,7 @@ SMODS.Joker{
 				end
 			end
         end
-		if context.end_of_round then
+		if context.end_of_round and context.main_eval then
 			for i = 1, #G.playing_cards do
 				G.playing_cards[i].ability.finitysaffronchecked = nil
 			end
@@ -2416,7 +2435,7 @@ SMODS.Joker{
 		local poketype_list = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Colorless", "Dark", "Metal", "Fairy", "Dragon", "Earth"}
 		local typesinjokers = {}
 		for i = 1, #G.jokers.cards do
-			if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
+			if G.jokers.cards[i].ability and G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
 				for _, value in ipairs(poketype_list) do
 					if value == G.jokers.cards[i].ability.extra.ptype then
 						table.insert(typesinjokers, value)
@@ -2439,7 +2458,7 @@ SMODS.Joker{
 				local poketype_list = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Colorless", "Dark", "Metal", "Fairy", "Dragon", "Earth"}
 				local typesinjokers = {}
 				for i = 1, #G.jokers.cards do
-					if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
+					if G.jokers.cards[i].ability and G.jokers.cards[i].ability.extra and type(G.jokers.cards[i].ability.extra) == "table"  and G.jokers.cards[i].ability.extra.ptype and G.jokers.cards[i] ~= card then
 						for _, value in ipairs(poketype_list) do
 							if value == G.jokers.cards[i].ability.extra.ptype then
 								table.insert(typesinjokers, value)
@@ -2461,16 +2480,81 @@ SMODS.Joker{
                 }
 			end
         end
-		if context.end_of_round and context.main_eval and not context.repetition and context.cardarea == G.jokers then
+		if context.end_of_round and context.main_eval and context.cardarea == G.jokers then
 			if card.ability.extra.first == true then
 				card.ability.extra.first = false
 			end
 			for i = 1, #G.jokers.cards do
-				if G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype and G.jokers.cards[i].ability.extra.ptype == card.ability.extra.ptype and G.jokers.cards[i] ~= card then
+				if G.jokers.cards[i].ability and G.jokers.cards[i].ability.extra and type(G.jokers.cards[i].ability.extra) == "table" and G.jokers.cards[i].ability.extra.ptype and G.jokers.cards[i].ability.extra.ptype == card.ability.extra.ptype and G.jokers.cards[i] ~= card and G.jokers.cards[i].config.center.key ~= "j_finity_cgoosejoker" then
 					increment_energy(G.jokers.cards[i], card.ability.extra.ptype)
 				end
 			end
 		end
+    end
+}
+end
+--paperback crossmod joker
+if next(SMODS.find_mod('paperback')) then
+SMODS.Joker{
+    name = "Taupe Treble",
+    key = "taupetreble",
+    config = {
+        extra = {
+            xMult = 1.1,
+            ExMult = 0.1
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Taupe Treble',
+        ['text'] = {
+            [1] = 'Played {C:attention}Enhanced cards{} give {X:red,C:white}X#1#{} Mult',
+            [2] = 'when scored, then increase it by {X:red,C:white}X#2#{}',
+            [3] = '{C:inactive}(Resets when {C:attention}Boss Blind{} {C:inactive}is defeated){}'
+        }
+    },
+    pos = {
+        x = 0,
+        y = 0
+    },
+	soul_pos = { x = 1, y = 0 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'paperbackbossjokers',
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.xMult,card.ability.extra.ExMult}}
+    end,
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play then
+            if (function()
+        local enhancements = SMODS.get_enhancements(context.other_card)
+        for k, v in pairs(enhancements) do
+            if v then
+                return true
+            end
+        end
+        return false
+    end)() then
+                local xMult_value = card.ability.extra.xMult
+				if not context.blueprint then
+					card.ability.extra.xMult = (card.ability.extra.xMult) + card.ability.extra.ExMult
+				end
+                return {
+                    Xmult = xMult_value
+                }
+            end
+        end
+        if context.end_of_round and context.main_eval and G.GAME.blind.boss and not context.blueprint then
+                return {
+                    func = function()
+                    card.ability.extra.xMult = 1.1
+                    return true
+                end
+                }
+        end
     end
 }
 end
@@ -2533,7 +2617,7 @@ Partner_API.Partner{
     loc_txt = {
         name = "The Glutton",
         text = {
-            "Start blinds with",
+            "Start {C:attention}Blinds{} with",
 			"{C:attention}Score{} equal to #1#",
 			"difference between current",
 			"and previous target"
@@ -2669,7 +2753,7 @@ Partner_API.Partner{
 		if context.before and not context.blueprint then
 			card.ability.hand_played = true
 		end
-        if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or context.end_of_round then
+        if (context.hand_drawn and card.ability.hand_played == true and not context.blueprint) or (context.end_of_round and not context.repetition and not context.individual) then
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i].ability.finitycrimsonheartmark and G.jokers.cards[i].ability.finitycrimsonheartmark == "lovesick" then
 					G.jokers.cards[i].ability.finitycrimsonheartmark = nil
@@ -2762,7 +2846,7 @@ Partner_API.Partner{
         return { vars = {benefits} }
     end,
     calculate = function(self, card, context)
-		if (context.hand_drawn and not context.blueprint) or context.end_of_round then
+		if (context.hand_drawn and not context.blueprint) or (context.end_of_round and not context.repetition and not context.individual) then
 			for i = 1, #G.playing_cards do
 				if G.playing_cards[i].ability.finityceruleanbellmark and G.playing_cards[i].ability.finityceruleanbellmark == "controlling" then
 					G.playing_cards[i].ability.finityceruleanbellmark = nil
@@ -2821,6 +2905,180 @@ Partner_API.Partner{
         end
     end
 }
+if next(SMODS.find_mod('Cryptid')) then
+function infecteeupgrade(card)
+	local upgradePath = {
+		{key = nil,        next = "e_foil"},
+		{key = "foil",     next = "e_holo"},
+		{key = "holo",     next = "e_polychrome"},
+		{key = "polychrome", next = "e_cry_astral"}
+	}
+    for _, step in ipairs(upgradePath) do
+        if (step.key == nil and not card.edition) or
+           (card.edition and card.edition[step.key]) then
+            card:set_edition(step.next, true)
+            break
+        end
+    end
+end
+Partner_API.Partner{
+    key = "infectee",
+    name = "The Infectee",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 0, y = 1},
+    loc_txt = {
+        name = "The Infectee",
+        text = {
+            "Upgrade {C:attention}leftmost#1#{}",
+			"Joker's {C:edition}edition{} when",
+			"{C:attention}Boss Blind{} is defeated"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Vermillion Virus{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_vermillionvirus"}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = ""
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = " and rightmost" end
+        return { vars = {benefits} }
+    end,
+    calculate = function(self, card, context)
+        if context.end_of_round and not context.repetition and not context.individual and G.GAME.blind.boss and #G.jokers.cards >= 1 then
+            infecteeupgrade(G.jokers.cards[1])
+			if next(SMODS.find_card(card.ability.extra.related_card)) then
+				infecteeupgrade(G.jokers.cards[#G.jokers.cards])
+			end
+			card:juice_up()
+        end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_vermillionvirus" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "forgetful",
+    name = "The Forgetful",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 1, y = 1},
+    loc_txt = {
+        name = "The Forgetful",
+        text = {
+            "{C:attention}+#1#{} #2#",
+			"this round when {C:attention}Blind{}",
+			"is selected"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Sapphire Stamp{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_sapphirestamp", used = false, selection_add = 1, hand_size = 2}},
+    loc_vars = function(self, info_queue, card)
+        local benefits1 = 1
+		local benefits2 = "card selection limit"
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits1 = 2 benefits2 = "hand size" end
+        return { vars = {benefits1,benefits2} }
+    end,
+    calculate = function(self, card, context)
+        if context.setting_blind then
+			if next(SMODS.find_card(card.ability.extra.related_card)) then
+				G.E_MANAGER:add_event(Event({func = function()
+                    G.hand:change_size(card.ability.extra.hand_size)
+                    G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + card.ability.extra.hand_size
+                    card_eval_status_text(card, "extra", nil, nil, nil, {message = localize{type = "variable", key = "a_handsize", vars = {card.ability.extra.hand_size}}})
+                return true end}))
+			else
+				G.E_MANAGER:add_event(Event({func = function()
+                    SMODS.change_play_limit(card.ability.extra.selection_add)
+                    card_eval_status_text(card, "extra", nil, nil, nil, {message = "+" .. card.ability.extra.selection_add .. " Selection" })
+                return true end}))
+			end
+        end
+		if context.end_of_round and not context.repetition and not context.individual then
+			SMODS.change_play_limit(-card.ability.extra.selection_add)
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_sapphirestamp" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "snob",
+    name = "The Snob",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 5, y = 1},
+    loc_txt = {
+        name = "The Snob",
+        text = {
+            "{C:green}#1# in #2#{} chance for every",
+			"{C:attention}card{} in played hand to permanently",
+			"gain {C:chips}+#3#{} Chips before scoring",
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Turquoise Tornado{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_turquoisetornado", used = false, odds = 3, chips = 10}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds, card.ability.extra.chips*benefits} }
+    end,
+    calculate = function(self, card, context)
+        if context.before and pseudorandom('snob') < G.GAME.probabilities.normal / card.ability.extra.odds then
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+			for i = 1, #context.full_hand do
+				context.full_hand[i].ability.perma_bonus = context.full_hand[i].ability.perma_bonus or 0
+				context.full_hand[i].ability.perma_bonus = context.full_hand[i].ability.perma_bonus + card.ability.extra.chips * benefits
+				context.full_hand[i]:juice_up()
+			end
+			return {
+                message = "Upgrade!"
+            }
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_sapphirestamp" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+end
 end
 
 function safely_get(t, ...)

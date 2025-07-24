@@ -3,7 +3,7 @@
 	"name": "Finity",
 	"display_name": "Finity",
 	"author": ["_Freh, missingnumber"],
-	"description": "Foes turned friends",
+	"description": "Showdown Jokers appear! This mod adds a plethora of new Jokers based on the Boss Blinds fought on Ante 8, defeat them to make the corresponding Joker appear in the next shop. Finity is compatible with a lot of other mods that add Showdown Boss Blinds with more than 20 Cross-Mod Jokers.",
 	"prefix": "finity",
 	"main_file": "Finity.lua",
 	"priority": 1.1,

@@ -249,6 +249,20 @@ return {
 			lq_glorious_3={
                 "Total misplay!",
             },
+			lq_chartreuse_1={
+                "The Nest always",
+				"wins, honk!"
+            },
+			lq_chartreuse_2={
+				"Honk honk! Looks",
+                "like Lady Luck",
+				"flew south!"
+            },
+			lq_chartreuse_3={
+                "I don’t need luck,",
+				"I've got hustle.",
+				"And I EV-trained it!"
+            },
 			lq_endless_crimson_1={
                 "Please",
 				"don't go..."
@@ -530,6 +544,46 @@ return {
 			pnr_finity_controlling_5={
                 "I'm a natural",
 				"leader."
+            },
+			pnr_finity_infectee_1={
+                "Ahhhh..?"
+            },
+            pnr_finity_infectee_2={
+                "Ahahaha..!"
+            },
+            pnr_finity_infectee_3={
+                "Nnnn..."
+            },
+			pnr_finity_forgetful_1={
+                "Ah, um... what was",
+				"your name again?"
+            },
+            pnr_finity_forgetful_2={
+                "My memory isn't",
+				"the best..."
+            },
+			pnr_finity_snob_1={
+                "You dare think",
+				"yourself worthy",
+				"of my company?"
+            },
+            pnr_finity_snob_2={
+                "So long as that",
+				"repulsive drunkard",
+				"doesn't show himself,",
+				"I'll be fine."
+            },
+            pnr_finity_snob_3={
+                "I partake in only",
+				"the finest in life."
+            },
+			pnr_finity_snob_4={
+                "You had best play",
+				"properly in my presence!."
+            },
+			pnr_finity_snob_5={
+                "I won't tolerate",
+				"a bad hand."
             },
 		}
 	},
