@@ -2435,7 +2435,7 @@ SMODS.Joker{
 		local poketype_list = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Colorless", "Dark", "Metal", "Fairy", "Dragon", "Earth"}
 		local typesinjokers = {}
 		for i = 1, #G.jokers.cards do
-			if G.jokers.cards[i].ability and G.jokers.cards[i].ability.extra and G.jokers.cards[i].ability.extra.ptype then
+			if G.jokers.cards[i].ability and G.jokers.cards[i].ability.extra and type(G.jokers.cards[i].ability.extra) == "table" and G.jokers.cards[i].ability.extra.ptype then
 				for _, value in ipairs(poketype_list) do
 					if value == G.jokers.cards[i].ability.extra.ptype then
 						table.insert(typesinjokers, value)
@@ -3069,7 +3069,7 @@ Partner_API.Partner{
     end,
 	check_for_unlock = function(self, args)
         for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
-            if v.key == "j_finity_turquoisetornado" then
+            if v.key == "j_finity_sapphirestamp" then
                 if get_joker_win_sticker(v, true) >= 8 then
                     return true
                 end
