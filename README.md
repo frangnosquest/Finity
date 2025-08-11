@@ -2,7 +2,8 @@
 A Balatro mod that is all about befriending your foes
 
 This mod adds a new joker rarity, "Showdown", joker of this rarity are unique and only obtainable in the shop after defeating the relative showdown blind, altough there are ways to obtain them earlier, this means that these jokers spice up runs that continue through endless.
-#Crossmod
+
+# Crossmod
 Finity has built-in support for the following mods:
 
 -Cryptid https://github.com/SpectralPack/Cryptid
