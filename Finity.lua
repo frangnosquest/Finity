@@ -18,6 +18,7 @@ SMODS.Atlas({key = 'vrankhc', path = 'compat/vrankhc.png', px = 71, py = 95})
 SMODS.Atlas({key = 'vranklc', path = 'compat/vranklc.png', px = 71, py = 95})
 SMODS.Atlas({key = 'vrankhccompat', path = 'compat/vrankhccompat.png', px = 71, py = 95})
 SMODS.Atlas({key = 'vranklccompat', path = 'compat/vranklccompat.png', px = 71, py = 95})
+SMODS.Atlas({key = 'creditsthanks', path = 'creditsthanks.png', px = 71, py = 95})
 
 local finity_config = SMODS.current_mod.config
 SMODS.current_mod.optional_features = function()
@@ -1482,19 +1483,19 @@ SMODS.Joker {
 	end,
 }
 function finity_obsidian_recursive(table_return_table, index)
-    local ret = table_return_table[index]
-    if index <= #table_return_table then
-        local function getDeepest(tbl)
-            tbl = tbl or {}
-            while tbl.extra do
-                tbl = tbl.extra
-            end
-            return tbl
-        end
-        local prev = getDeepest(ret)
-        prev.extra = finity_obsidian_recursive(table_return_table, index + 1)
-    end
-    return ret
+		local ret = table_return_table[index]
+		if index <= #table_return_table then
+			local function getDeepest(tbl)
+				tbl = tbl or {}
+				while tbl.extra do
+					tbl = tbl.extra
+				end
+				return tbl
+			end
+			local prev = getDeepest(ret)
+			prev.extra = finity_obsidian_recursive(table_return_table, index + 1)
+		end
+		return ret
 end
 
 SMODS.Joker {
@@ -3078,6 +3079,226 @@ Partner_API.Partner{
         end
     end
 }
+Partner_API.Partner{
+    key = "haunt",
+    name = "The Haunt",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 2, y = 1},
+    loc_txt = {
+        name = "The Haunt",
+        text = {
+            "{C:green}#1# in #2#{} chance to",
+			"copy any {C:attention}Joker{}"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Obsidian Orb{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_obsidianorb", odds = 5}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {G.GAME.probabilities.normal*benefits, card.ability.extra.odds} }
+    end,
+    calculate = function(self, card, context)
+		local effects_table = {}
+		local benefits = 1
+		if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+		if #G.jokers.cards > 0 then
+			for i = 1, #G.jokers.cards do
+				if G.jokers.cards[i].config.center.key ~= "j_finity_obsidianorb" and pseudorandom('haunt') < G.GAME.probabilities.normal*benefits / card.ability.extra.odds then
+					local effect = SMODS.blueprint_effect(card, G.jokers.cards[i], context)
+					if effect then
+						effect.colour = G.C.BLACK
+					end
+					effects_table[#effects_table+1] = effect
+				end
+			end
+		end
+	return finity_obsidian_recursive(effects_table, 1)
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_obsidianorb" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "busybody",
+    name = "The Busybody",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 3, y = 1},
+    loc_txt = {
+        name = "The Busybody",
+        text = {
+            "If scoring hand contains",
+			"a {C:attention}#1#{} suit, {C:green}#4#{}#2# {C:money}#3#{}",
+			"#5#{C:dark_edition}#6#{}#7#",
+			"{C:inactive}(different effect if it's {C:attention}#8#{C:inactive}){}"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}lavender Loop{} on",
+            "{C:attention}Gold Stake{} difficulty"
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_lavenderloop", money = 2, storedmoney = 0, odds = 3}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+		local hour = tonumber(os.date("%H"))
+		local text1
+		if (hour >= 6 and hour < 18) then
+			text1 = "light"
+			text2 = "gain"
+			text3 = "$" .. card.ability.extra.money*benefits
+			text4 = ""
+			text5 = "at end of round"
+			text6 = ""
+			text7 = ""
+			text8 = "nighttime"
+		else
+			text1 = "dark"
+			text2 = " chance to"
+			text3 = ""
+			text4 = G.GAME.probabilities.normal*benefits .. " in " .. card.ability.extra.odds
+			text5 = "create a random "
+			text6 = "Spectral "
+			text7 = "card"
+			text8 = "daytime"
+		end
+        return { vars = {text1,text2,text3,text4,text5,text6,text7,text8} }
+    end,
+    calculate = function(self, card, context)
+        if context.before then
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+            local hour = tonumber(os.date("%H"))
+			if hour >= 6 and hour < 18 then
+				for i = 1, #context.scoring_hand do
+					if context.scoring_hand[i]:is_suit("Hearts") or context.scoring_hand[i]:is_suit("Diamonds") then
+						card.ability.extra.storedmoney = card.ability.extra.storedmoney + card.ability.extra.money*benefits
+						return {
+							message = card.ability.extra.storedmoney .. "$",
+							colour = G.C.MONEY,
+							card = card,
+						}
+					end
+				end
+			else
+				for i = 1, #context.scoring_hand do
+					if context.scoring_hand[i]:is_suit("Spades") or context.scoring_hand[i]:is_suit("Clubs") then
+						if pseudorandom('busybody') < G.GAME.probabilities.normal*benefits / card.ability.extra.odds then
+							return {
+							func = function()local created_consumable = false
+							if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+								created_consumable = true
+								G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+								G.E_MANAGER:add_event(Event({
+									func = function()
+										SMODS.add_card{set = 'Spectral', key = nil, key_append = 'joker_forge_spectral'}
+										G.GAME.consumeable_buffer = 0
+										return true
+									end
+								}))
+							end
+								if created_consumable then
+									card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
+								end
+								return true
+							end
+							}
+						else
+							break
+						end
+					end
+				end
+			end
+        end
+    end,
+	calculate_cash = function(self, card)
+		local bonus = card.ability.extra.storedmoney
+		card.ability.extra.storedmoney = 0
+		if bonus > 0 then return bonus end
+	end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_lavenderloop" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "narcissist",
+    name = "The Narcissist",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 4, y = 1},
+    loc_txt = {
+        name = "The Narcissist",
+        text = {
+            "{X:chips,C:white}X#1#{} Chips once per",
+			"{C:attention}hand{} if {X:mult,C:white}Mult{} ever",
+			"equals or exceeds {X:chips,C:white}Chips{}"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Lemon Trophy{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_lemontrophy", xchips = 2, used = false}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 1.5
+			return { vars = {card.ability.extra.xchips * benefits}, key = 'benefitsnarc', set = 'Joker', }
+		else
+			return { vars = {card.ability.extra.xchips * benefits}}
+		end
+    end,
+    calculate = function(self, card, context)
+        if context.before then
+            card.ability.extra.used = false
+		elseif to_big(mult) >= to_big(hand_chips) and card.ability.extra.used == false then
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+			card.ability.extra.used = true
+			return {
+				xchips = card.ability.extra.xchips * benefits,
+				card = card
+			}
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_lemontrophy" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
 end
 end
 
@@ -3198,7 +3419,7 @@ SMODS.current_mod.extra_tabs = function()
                     { card_limit = 5, type = 'title', highlight_limit = 0, collection = true }
                 )
 
-                local whatspritenow = 5
+                local whatspritenow = 0
 				for i, key in ipairs({ "freh", "missingnumber"}) do
                     local card = Card(0, 0,
                         G.CARD_W, G.CARD_H, G.P_CARDS.empty,
@@ -3206,6 +3427,84 @@ SMODS.current_mod.extra_tabs = function()
 
                     G.finity_credits_area:emplace(card)
 					card.ability.credits = key
+					card.children.center.atlas = G.ASSET_ATLAS['finity_creditsthanks']
+					card.children.floating_sprite.atlas = G.ASSET_ATLAS['finity_creditsthanks'] 
+					card.children.center:set_sprite_pos({x=0, y=whatspritenow})
+					card.children.floating_sprite:set_sprite_pos({x=1, y=whatspritenow})
+					whatspritenow = whatspritenow + 1
+                end
+                creditsbuild[#creditsbuild + 1] = {
+                    n = G.UIT.R,
+                    config = { align = "cm", padding = 0.07, no_fill = true },
+                    nodes = {
+                        { n = G.UIT.O, config = { object = G.finity_credits_area } }
+                    }
+                }
+                return {
+                    n = G.UIT.ROOT,
+                    config = {
+                        r = 0.1, minw = 10, minh = 6, align = "tm", padding = 0.2, colour = G.C.BLACK
+                    },
+                    nodes = creditsbuild
+                }
+            end
+        },
+		{
+            label = 'Special Thanks',
+            tab_definition_function = function()
+				local creditsbuild = {
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "Finity couln't be what it is without the huge support from the", colour = G.C.WHITE, scale = 0.5}}}},
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "balatro modding community as a whole, here's a list of people", colour = G.C.WHITE, scale = 0.5}}}},
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "that contributed to the mod directly and indirectly", colour = G.C.WHITE, scale = 0.5}}}},
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "through cross-mod content.", colour = G.C.WHITE, scale = 0.5}}}},
+					{n = G.UIT.R, config = {align = "tm"}, nodes = {{n = G.UIT.T, config = {text = "", colour = G.C.WHITE, scale = 0.5}}}},
+				}
+
+                G.finity_credits_area = CardArea(
+                    G.ROOM.T.x + 0.2 * G.ROOM.T.w / 2, G.ROOM.T.h,
+                    4.25 * G.CARD_W,
+                    0.95 * G.CARD_H,
+                    { card_limit = 5, type = 'title', highlight_limit = 0, collection = true }
+                )
+
+                local whatspritenow = 2
+				for i, key in ipairs({ "aikoyori", "paya", "notmario", "jpenguin"}) do
+                    local card = Card(0, 0,
+                        G.CARD_W, G.CARD_H, G.P_CARDS.empty,
+                        G.P_CENTERS["j_finity_violetvessel"])
+
+                    G.finity_credits_area:emplace(card)
+					card.ability.credits = key
+					card.children.center.atlas = G.ASSET_ATLAS['finity_creditsthanks']
+					card.children.floating_sprite.atlas = G.ASSET_ATLAS['finity_creditsthanks'] 
+					card.children.center:set_sprite_pos({x=0, y=whatspritenow})
+					card.children.floating_sprite:set_sprite_pos({x=1, y=whatspritenow})
+					whatspritenow = whatspritenow + 1
+                end
+                creditsbuild[#creditsbuild + 1] = {
+                    n = G.UIT.R,
+                    config = { align = "cm", padding = 0.07, no_fill = true },
+                    nodes = {
+                        { n = G.UIT.O, config = { object = G.finity_credits_area } }
+                    }
+                }
+				G.finity_credits_area = CardArea(
+                    G.ROOM.T.x + 0.2 * G.ROOM.T.w / 2, G.ROOM.T.h,
+                    4.25 * G.CARD_W,
+                    0.95 * G.CARD_H,
+                    { card_limit = 5, type = 'title', highlight_limit = 0, collection = true }
+                )
+
+                local whatspritenow = 6
+				for i, key in ipairs({"ee", "unik", "cruel", "madcap"}) do
+                    local card = Card(0, 0,
+                        G.CARD_W, G.CARD_H, G.P_CARDS.empty,
+                        G.P_CENTERS["j_finity_violetvessel"])
+
+                    G.finity_credits_area:emplace(card)
+					card.ability.credits = key
+					card.children.center.atlas = G.ASSET_ATLAS['finity_creditsthanks']
+					card.children.floating_sprite.atlas = G.ASSET_ATLAS['finity_creditsthanks'] 
 					card.children.center:set_sprite_pos({x=0, y=whatspritenow})
 					card.children.floating_sprite:set_sprite_pos({x=1, y=whatspritenow})
 					whatspritenow = whatspritenow + 1
@@ -3247,8 +3546,74 @@ G.localization.descriptions.Joker['freh'] =  {
 }
 
 G.localization.descriptions.Joker['missingnumber'] =  {
-    name = "missingnumber",
+    name = "Missingnumber",
     text = {
         "{C:attention}Artist{}"
     },
+}
+
+G.localization.descriptions.Joker['aikoyori'] =  {
+    name = "Aikoyori",
+    text = {
+        "{C:attention}Aikoyori's Shenanigans{}"
+    },
+}
+
+G.localization.descriptions.Joker['paya'] =  {
+    name = "Paya",
+    text = {
+        "{C:attention}Paya's Terrible Additions{}"
+    },
+}
+
+G.localization.descriptions.Joker['notmario'] =  {
+    name = "Notmario",
+    text = {
+        "{C:attention}More Fluff{}"
+    },
+}
+
+G.localization.descriptions.Joker['jpenguin'] =  {
+    name = "JPenguin",
+    text = {
+        "{C:attention}Chartreuse Chamber{}",
+		"{C:attention}concepting{}"
+    },
+}
+
+G.localization.descriptions.Joker['ee'] =  {
+    name = "Ruby",
+    text = {
+        "{C:attention}Entropy{}"
+    },
+}
+
+G.localization.descriptions.Joker['unik'] =  {
+    name = "Unik",
+    text = {
+        "{C:attention}Unik's Mod{}"
+    },
+}
+
+G.localization.descriptions.Joker['cruel'] =  {
+    name = "Mathguy",
+    text = {
+        "{C:attention}Cruel Blinds{}"
+    },
+}
+
+G.localization.descriptions.Joker['madcap'] =  {
+    name = "RGBeet",
+    text = {
+        "{C:attention}Madcap{}"
+    },
+}
+
+G.localization.descriptions.Joker['benefitsnarc'] =  {
+    name = "The Narcissist",
+    text = {
+            "{X:mult,C:white}X#1#{} Mult once per",
+			"{C:attention}hand{} if {X:mult,C:white}Mult{} ever",
+			"equals or exceeds {X:chips,C:white}Chips{}"
+        },
 }

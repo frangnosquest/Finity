@@ -585,6 +585,58 @@ return {
                 "I won't tolerate",
 				"a bad hand."
             },
+			pnr_finity_haunt_1={
+                "..."
+            },
+            pnr_finity_haunt_2={
+                "I don't have",
+				"much to say..."
+            },
+            pnr_finity_haunt_3={
+                "Are you haunted",
+				"like me?"
+            },
+			pnr_finity_haunt_4={
+                "Spirits of the past...",
+				"they speak to me..."
+            },
+			pnr_finity_haunt_5={
+                "Don't look",
+				"at me..."
+            },
+			pnr_finity_busybody_1={
+                "Hurry up!"
+            },
+            pnr_finity_busybody_2={
+                "We don't have",
+				"all day!"
+            },
+            pnr_finity_busybody_3={
+                "I'm keeping a",
+				"timer on you,",
+				"by the way."
+            },
+			pnr_finity_busybody_4={
+                "I have places to be.",
+				"Make it quick."
+            },
+			pnr_finity_busybody_5={
+                "Don't just sit",
+				"there and do nothing!"
+            },
+			pnr_finity_narcissist_1={
+                "People like me",
+				"'cause I'm the",
+				"coolest around!"
+            },
+            pnr_finity_narcissist_2={
+                "Let's rock and roll!"
+            },
+            pnr_finity_narcissist_3={
+                "Chips are the coolness",
+				"factor by which Mult",
+				"is measured."
+            },
 		}
 	},
 }
