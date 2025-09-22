@@ -20,6 +20,8 @@ Finity has built-in support for the following mods:
 
 -Partners https://github.com/Icecanno/Partner-API/
 
+-CardPronouns https://github.com/real-niacat/CardPronouns
+
 
 Also, some mod creators went out of their way to add finity support on their own:
 
