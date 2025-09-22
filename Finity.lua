@@ -1,6 +1,8 @@
+SMODS.Atlas {key = "coconut", path = "coconut.png", px = 128, py = 128}
 SMODS.Atlas {key = "modicon", path = "icon.png", px = 32, py = 32}
 SMODS.Atlas {key = "tag", path = "tag.png", px = 34, py = 34}
 SMODS.Atlas({key = 'bossjokers', path = 'jokers.png', px = 71, py = 95})
+SMODS.Atlas({key = 'boss_shinyjokers', path = 'compat/shinyjokers.png', px = 71, py = 95})
 SMODS.Atlas({key = 'crybossjokers', path = 'compat/cryptid.png', px = 71, py = 95})
 SMODS.Atlas({key = 'akyrsbossjokers', path = 'compat/aikoyorisshenanigans.png', px = 71, py = 95})
 SMODS.Atlas({key = 'ortalabbossjokers', path = 'compat/ortalab.png', px = 71, py = 95})
@@ -225,6 +227,8 @@ SMODS.Joker {
     key = "verdantleaf",
     name = "Verdant Leaf",
     atlas = 'bossjokers',
+	poke_custom_prefix = "finity_boss",
+	pronouns = "she_they",
     loc_txt = {
         name = "Verdant Leaf",
         text = {
@@ -305,6 +309,8 @@ SMODS.Joker {
     key = "violetvessel",
     name = "Violet Vessel",
     atlas = 'bossjokers',
+	poke_custom_prefix = "finity_boss",
+	pronouns = "he_him",
     loc_txt = {
         name = "Violet Vessel",
         text = {
@@ -378,6 +384,8 @@ SMODS.Joker {
     key = "amberacorn",
     name = "Amber Acorn",
     atlas = 'bossjokers',
+	poke_custom_prefix = "finity_boss",
+	pronouns = "he_any",
     loc_txt = {
         name = "Amber Acorn",
         text = {
@@ -448,6 +456,8 @@ SMODS.Joker {
     key = "crimsonheart",
     name = "Crimson Heart",
     atlas = 'bossjokers',
+	poke_custom_prefix = "finity_boss",
+	pronouns = "she_they",
     loc_txt = {
         name = "Crimson Heart",
         text = {
@@ -549,6 +559,8 @@ SMODS.Joker {
     key = "ceruleanbell",
     name = "Cerulean Bell",
     atlas = 'bossjokers',
+	poke_custom_prefix = "finity_boss",
+	pronouns = "she_her",
     loc_txt = {
         name = "Cerulean Bell",
         text = {
@@ -1179,6 +1191,7 @@ SMODS.Joker {
     key = "lavenderloop",
     name = "Lavender Loop",
     atlas = 'crybossjokers',
+	pronouns = "she_her",
     loc_txt = {
         name = "Lavender Loop",
         text = {
@@ -1254,6 +1267,7 @@ SMODS.Joker {
     key = "turquoisetornado",
     name = "Turquoise Tornado",
     atlas = 'crybossjokers',
+	pronouns = "she_her",
     loc_txt = {
         name = "Turquoise Tornado",
         text = {
@@ -1308,6 +1322,7 @@ SMODS.Joker {
     key = "vermillionvirus",
     name = "Vermillion Virus",
     atlas = 'crybossjokers',
+	pronouns = "he_they_it",
     loc_txt = {
         name = "Vermillion Virus",
         text = {
@@ -1404,6 +1419,7 @@ SMODS.Joker {
     key = "sapphirestamp",
     name = "Sapphire Stamp",
     atlas = 'crybossjokers',
+	pronouns = "he_they",
     loc_txt = {
         name = "Sapphire Stamp",
         text = {
@@ -1436,6 +1452,7 @@ SMODS.Joker {
     key = "obsidianorb",
     name = "Obsidian Orb",
     atlas = 'crybossjokers',
+	pronouns = "he_it",
     loc_txt = {
         name = "Obsidian Orb",
         text = {
@@ -1502,6 +1519,7 @@ SMODS.Joker {
     key = "lemontrophy",
     name = "Lemon Trophy",
     atlas = 'crybossjokers',
+	pronouns = "he_him",
     loc_txt = {
         name = "Lemon Trophy",
         text = {
@@ -1534,6 +1552,7 @@ SMODS.Joker {
     key = "periwinklepinecone",
     name = "Periwinkle Pinecone",
     atlas = 'akyrsbossjokers',
+	pronouns = "they_them",
     loc_txt = {
         name = "Periwinkle Pinecone",
         text = {
@@ -1579,6 +1598,7 @@ SMODS.Joker {
     key = "razzleraindrop",
     name = "Razzle Raindrop",
     atlas = 'akyrsbossjokers',
+	pronouns = "they_he",
     loc_txt = {
         name = "Razzle Raindrop",
         text = {
@@ -1830,6 +1850,7 @@ SMODS.Joker {
     key = "lilaclasso",
     name = "Lilac Lasso",
     atlas = 'akyrsbossjokers',
+	pronouns = "they_any",
     loc_txt = {
         name = "Lilac Lasso",
         text = {
@@ -1954,6 +1975,7 @@ SMODS.Joker {
     key = "gloriousglaive",
     name = "Glorious Glaive",
     atlas = 'akyrsbossjokers',
+	pronouns = "she_her",
     loc_txt = {
         name = "Glorious Glaive",
         text = {
@@ -2259,6 +2281,7 @@ SMODS.Joker{
     unlocked = true,
     discovered = true,
     atlas = 'ortalabbossjokers',
+	pronouns = "he_him",
 
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.xmult,1 + (card.ability.extra.xmult * (G.jokers and #G.jokers.cards or 1))}}
@@ -2638,6 +2661,12 @@ Partner_API.Partner{
     end,
     calculate = function(self, card, context)
         if context.setting_blind then
+			if G.GAME.blind.config.blind.key == "bl_cry_tornado" then
+				G.E_MANAGER:add_event(Event({func = function()
+					card:add_partner_speech_bubble("pnr_finity_glutton_tornado")
+				return true end}))
+				card:partner_say_stuff(5)
+			end
 			local benefits = 1
             if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
             local blindvalue = to_number(G.GAME.blind.chips)
@@ -3055,6 +3084,12 @@ Partner_API.Partner{
         return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds, card.ability.extra.chips*benefits} }
     end,
     calculate = function(self, card, context)
+		if context.setting_blind and G.GAME.blind.config.blind.key == "bl_final_vessel" then
+			G.E_MANAGER:add_event(Event({func = function()
+					card:add_partner_speech_bubble("pnr_finity_snob_vessel")
+			return true end}))
+			card:partner_say_stuff(5)
+		end
         if context.before and pseudorandom('snob') < G.GAME.probabilities.normal / card.ability.extra.odds then
 			local benefits = 1
 			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
@@ -3300,6 +3335,204 @@ Partner_API.Partner{
     end
 }
 end
+if next(SMODS.find_mod('aikoyorisshenanigans')) then
+Partner_API.Partner{
+    key = "keeper",
+    name = "The Keeper",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 0, y = 2},
+    loc_txt = {
+        name = "The Keeper",
+        text = {
+			"Start with {C:attention}5{} random",
+			"cards in your deck {C:attention}sealed{}",
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Periwinkle Pinecone{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_periwinklepinecone", benefits = false}},
+    loc_vars = function(self, info_queue, card)
+        if card.ability.extra.benefits == true then
+			return{key = 'benefitskeeper', set = 'Joker'}
+		end
+    end,
+    calculate = function(self, card, context)
+		if context.card_added then
+			if context.card.config.center.key == card.ability.extra.related_card then
+				G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
+				card.ability.extra.benefits = true
+				return {
+				message = "Bonus!"
+				}
+			end
+		end
+    end,
+	calculate_begin = function(self, card)
+		local cardstoseal = {}
+		local numberexists = true
+		for i = 1, 5 do
+			local value
+			repeat
+				value = math.ceil(pseudorandom('crimsonheart', 0.1, #G.playing_cards))
+				numberexists = false
+				for _, v in ipairs(cardstoseal) do
+					if v == value then
+						numberexists = true
+						break
+					end
+				end
+			until not numberexists
+			table.insert(cardstoseal, value)
+		end
+		for i = 1, #cardstoseal do
+			local _givenseal = SMODS.poll_seal({guaranteed = true, type_key = seal_type})
+			while _givenseal == nil or _givenseal == "akyrs_debuff" do
+				_givenseal = SMODS.poll_seal({guaranteed = true, type_key = seal_type})
+			end
+			G.playing_cards[cardstoseal[i]]:set_seal(_givenseal)
+		end
+	end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_periwinklepinecone" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+end
+Partner_API.Partner{
+    key = "tearful",
+    name = "The Tearful",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 1, y = 2},
+    loc_txt = {
+        name = "The Tearful",
+        text = {
+            "scored Hearts give {X:mult,C:white}X#1#{} Mult,",
+			"scored Spades give {C:chips}+#2#{} Chips,",
+			"scored Diamonds earn {C:money}$#3#{},",
+			"scored Clubs give {C:mult}+#4#{} Mult",
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Razzle Raindrop{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_razzleraindrop", xmult = 1.1, chips = 10, money = 0.25, mult = 2}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {card.ability.extra.xmult * benefits, card.ability.extra.chips * benefits, card.ability.extra.money * benefits, card.ability.extra.mult * benefits} }
+    end,
+    calculate = function(self, card, context)
+		if context.individual and context.cardarea == G.play then
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+			if context.other_card:is_suit("Spades") then
+				SMODS.calculate_effect({
+					message = localize { type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips * benefits}},
+					chip_mod = card.ability.extra.chips * benefits, 
+					colour = G.C.CHIPS
+				}, card)
+			end
+			if context.other_card:is_suit("Clubs") then
+				SMODS.calculate_effect({
+					message = localize { type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult * benefits}},
+					mult_mod = card.ability.extra.mult * benefits, 
+					colour = G.C.MULT
+				}, card)
+			end
+			if context.other_card:is_suit("Hearts") then
+				SMODS.calculate_effect({
+					message = localize { type = 'variable', key = 'a_xmult', vars = {card.ability.extra.xmult * benefits}},
+					xmult_mod = card.ability.extra.xmult * benefits, 
+					colour = G.C.MULT
+				}, card)
+			end
+			if context.other_card:is_suit("Diamonds") then
+				SMODS.calculate_effect({
+						dollars = card.ability.extra.money * benefits, 
+					}, card)
+			end
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_razzleraindrop" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "sheperd",
+    name = "The Sheperd",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 2, y = 2},
+    loc_txt = {
+        name = "The Sheperd",
+        text = {
+            "{C:dark_edition}#1#{} Joker slots",
+			"{C:dark_edition}+#2#{} Joker slots when",
+			"{C:attention}Boss Blind{} is defeated"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Lilac lasso{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_vermillionvirus", slots = -4, add = 1}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {card.ability.extra.slots, card.ability.extra.add * benefits} }
+    end,
+    calculate = function(self, card, context)
+        if context.end_of_round and not context.repetition and not context.individual and G.GAME.blind.boss then
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+            card.ability.extra.slots = card.ability.extra.slots + (card.ability.extra.add * benefits)
+			G.jokers.config.card_limit = G.jokers.config.card_limit + (card.ability.extra.add * benefits)
+			return {
+                message = localize('k_upgrade_ex')
+            }
+        end
+    end,
+	calculate_begin = function(self, card)
+		G.jokers.config.card_limit = G.jokers.config.card_limit + card.ability.extra.slots
+	end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_lilaclasso" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
 end
 
 function safely_get(t, ...)
@@ -3538,6 +3771,55 @@ SMODS.current_mod.config_tab = function()
     }}
 end
 
+--custom pronouns
+if next(SMODS.find_mod('cardpronouns')) then
+CardPronouns.Pronoun {
+    colour = HEX("96D0FF"),
+    text_colour = G.C.WHITE,
+    pronoun_table = { "He", "Any" },
+    in_pool = function()
+        return false
+    end,
+    key = "he_any"
+}
+CardPronouns.Pronoun {
+    colour = HEX("96D0FF"),
+    text_colour = G.C.WHITE,
+    pronoun_table = { "He", "They", "It" },
+    in_pool = function()
+        return false
+    end,
+    key = "he_they_it"
+}
+CardPronouns.Pronoun {
+    colour = HEX("96D0FF"),
+    text_colour = G.C.WHITE,
+    pronoun_table = { "He", "It" },
+    in_pool = function()
+        return false
+    end,
+    key = "he_it"
+}
+CardPronouns.Pronoun {
+    colour = HEX("96D0FF"),
+    text_colour = G.C.WHITE,
+    pronoun_table = { "they", "He" },
+    in_pool = function()
+        return false
+    end,
+    key = "they_he"
+}
+CardPronouns.Pronoun {
+    colour = HEX("FF3EF7"),
+    text_colour = G.C.WHITE,
+    pronoun_table = { "they", "Any" },
+    in_pool = function()
+        return false
+    end,
+    key = "they_any"
+}
+end
+
 G.localization.descriptions.Joker['freh'] =  {
     name = "_Freh",
     text = {
@@ -3615,5 +3897,13 @@ G.localization.descriptions.Joker['benefitsnarc'] =  {
             "{X:mult,C:white}X#1#{} Mult once per",
 			"{C:attention}hand{} if {X:mult,C:white}Mult{} ever",
 			"equals or exceeds {X:chips,C:white}Chips{}"
+        },
+}
+
+G.localization.descriptions.Joker['benefitskeeper'] =  {
+    name = "The Keeper",
+    text = {
+			"{C:attention}+1{} consumable slot when",
+			"{C:attention}Periwinkle Pinecone{} is obtained"
         },
 }

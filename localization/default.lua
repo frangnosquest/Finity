@@ -479,6 +479,11 @@ return {
                 "Hic..! Ah, I'm a",
 				"bit tipsy..."
             },
+			pnr_finity_glutton_tornado={
+                "Well, well, well...",
+				"If it isn't the",
+				"Turquoise Trash..."
+            },
 			pnr_finity_klutz_1={
                 "I'm not wall-eyed!",
 				"I'm just looking",
@@ -585,6 +590,10 @@ return {
                 "I won't tolerate",
 				"a bad hand."
             },
+			pnr_finity_snob_vessel={
+                "How dare you bring",
+				"HIM in my sight!"
+            },
 			pnr_finity_haunt_1={
                 "..."
             },
@@ -636,6 +645,32 @@ return {
                 "Chips are the coolness",
 				"factor by which Mult",
 				"is measured."
+            },
+			pnr_finity_keeper_1={
+                "Do you wanna see",
+				"my Seal collection?"
+            },
+            pnr_finity_keeper_2={
+                "I like to collect",
+				"Seals in my free time."
+            },
+            pnr_finity_keeper_3={
+                "Stickers are pretty",
+				"neat too!"
+            },
+			pnr_finity_tearful_1={
+                "Sniff..."
+            },
+            pnr_finity_tearful_2={
+                "I- I'm fine...",
+				"I always cry like this."
+            },
+            pnr_finity_tearful_3={
+                "I- I hope I'm not",
+				"in your w- way..."
+            },
+			pnr_finity_sheperd_1={
+                "Howdy, partner!"
             },
 		}
 	},
