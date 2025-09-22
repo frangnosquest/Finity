@@ -3492,7 +3492,7 @@ Partner_API.Partner{
         name = "The Sheperd",
         text = {
             "{C:dark_edition}#1#{} Joker slots",
-			"{C:dark_edition}+#2#{} Joker slots when",
+			"{C:dark_edition}+#2#{} Joker #3# when",
 			"{C:attention}Boss Blind{} is defeated"
         },
 		unlock={
@@ -3502,11 +3502,12 @@ Partner_API.Partner{
         },
     },
     atlas = "partners",
-    config = {extra = {related_card = "j_finity_vermillionvirus", slots = -4, add = 1}},
+    config = {extra = {related_card = "j_finity_lilaclasso", slots = -4, add = 1}},
     loc_vars = function(self, info_queue, card)
         local benefits = 1
-        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
-        return { vars = {card.ability.extra.slots, card.ability.extra.add * benefits} }
+		local slot = "slot"
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 slot = "slots" end
+        return { vars = {card.ability.extra.slots, card.ability.extra.add * benefits, slot} }
     end,
     calculate = function(self, card, context)
         if context.end_of_round and not context.repetition and not context.individual and G.GAME.blind.boss then
