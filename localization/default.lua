@@ -672,6 +672,19 @@ return {
 			pnr_finity_sheperd_1={
                 "Howdy, partner!"
             },
+			pnr_finity_narcoleptic_1={
+                "Zzz..."
+            },
+			pnr_finity_mage_1={
+                "Allow me to show you",
+				"some real magic."
+            },
+			pnr_finity_reveler_1={
+                "..."
+            },
+			pnr_finity_gamer_1={
+                "Is my mic working?"
+            },
 		}
 	},
 }

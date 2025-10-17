@@ -3037,12 +3037,14 @@ Partner_API.Partner{
 			else
 				G.E_MANAGER:add_event(Event({func = function()
                     SMODS.change_play_limit(card.ability.extra.selection_add)
+					SMODS.change_discard_limit(card.ability.extra.selection_add)
                     card_eval_status_text(card, "extra", nil, nil, nil, {message = "+" .. card.ability.extra.selection_add .. " Selection" })
                 return true end}))
 			end
         end
 		if context.end_of_round and not context.repetition and not context.individual then
 			SMODS.change_play_limit(-card.ability.extra.selection_add)
+			SMODS.change_discard_limit(-card.ability.extra.selection_add)
 		end
     end,
 	check_for_unlock = function(self, args)
@@ -3482,6 +3484,133 @@ Partner_API.Partner{
     end
 }
 Partner_API.Partner{
+    key = "smoker",
+    name = "The Smoker",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 4, y = 2},
+    loc_txt = {
+        name = "The Smoker",
+        text = {
+            "All played cards permanently gain",
+			"{C:chips}Chips{} when played equal to quantity",
+			"of their {C:attention}rank{} in played hand#1#"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Velvet Vapour{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_velvetvapour", slots = -4, add = 1}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = ""
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = " doubled" end
+        return { vars = {benefits} }
+    end,
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play then
+			local rank = context.other_card.config.card.value
+			local amount = 0
+			local benefits = 1
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+			for i = 1, #context.scoring_hand do
+				if context.scoring_hand[i].config.card.value == rank then
+					amount = amount + 1
+				end
+			end
+			context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
+			context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + (amount * benefits)
+			return {
+					extra = {message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
+					colour = G.C.CHIPS,
+					card = card
+				}
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_velvetvapour" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "narcoleptic",
+    name = "The Narcoleptic",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 3, y = 2},
+    loc_txt = {
+        name = "The Narcoleptic",
+        text = {
+            "Randomly enhance or unenhance one",
+			"{C:attention}held{} card when hand is played,",
+			"gains {X:mult,C:white}X#1#{} Mult when unenhancing",
+			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Chamomile Cloud{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_chamomilecloud", xmult = 1, exmult = 0.5}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {card.ability.extra.exmult * benefits, card.ability.extra.xmult} }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main and card.ability.extra.xmult ~= 1 then
+            return {
+                Xmult_mod = card.ability.extra.xmult,
+                message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
+            }
+        end
+		if context.before then
+			local target = pseudorandom_element(G.hand.cards)
+			if target.ability.set ~= "Enhanced" then
+				local _givenenhancement = SMODS.poll_enhancement({guaranteed = true})
+				while _givenenhancement == nil or _givenenhancement == "m_akyrs_scoreless" or _givenenhancement == "m_entr_disavowed" or _givenenhancement == "m_unstb_poison"  or _givenenhancement == "m_unstb_radioactive" or _givenenhancement == "m_unstb_biohazard" do
+					_givenenhancement = SMODS.poll_enhancement({guaranteed = false})
+				end
+				target:set_ability(G.P_CENTERS[_givenenhancement])
+				target:juice_up()
+			else
+				target:set_ability("c_base")
+				target:juice_up()
+				local benefits = 1
+				if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+				card.ability.extra.xmult = card.ability.extra.xmult + (card.ability.extra.exmult * benefits)
+				return {
+                    message = "X" .. tostring(card.ability.extra.xmult) .. " Mult",
+					colour = G.C.RED,
+                    card = card
+                }
+			end
+		end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_chamomilecloud" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
     key = "sheperd",
     name = "The Sheperd",
     unlocked = false,
@@ -3491,7 +3620,7 @@ Partner_API.Partner{
     loc_txt = {
         name = "The Sheperd",
         text = {
-            "{C:dark_edition}#1#{} Joker slots",
+            "{C:dark_edition}#4##1#{} Joker slots",
 			"{C:dark_edition}+#2#{} Joker #3# when",
 			"{C:attention}Boss Blind{} is defeated"
         },
@@ -3506,8 +3635,10 @@ Partner_API.Partner{
     loc_vars = function(self, info_queue, card)
         local benefits = 1
 		local slot = "slot"
+		local plus = ""
         if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 slot = "slots" end
-        return { vars = {card.ability.extra.slots, card.ability.extra.add * benefits, slot} }
+		if card.ability.extra.slots >= 0 then plus = "+" end
+        return { vars = {card.ability.extra.slots, card.ability.extra.add * benefits, slot, plus} }
     end,
     calculate = function(self, card, context)
         if context.end_of_round and not context.repetition and not context.individual and G.GAME.blind.boss then
@@ -3526,6 +3657,160 @@ Partner_API.Partner{
 	check_for_unlock = function(self, args)
         for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
             if v.key == "j_finity_lilaclasso" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "mage",
+    name = "The Mage",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 5, y = 2},
+    loc_txt = {
+        name = "The Mage",
+        text = {
+            "{C:chips}+1{} hand every",
+			"{C:red}#1#{} discards",
+			"{C:inactive}({C:attention}#2# {C:inactive}remaining)"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Salient Stream{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_salientstream", discards = 3}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 3
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+        return { vars = {benefits, card.ability.extra.discards} }
+    end,
+    calculate = function(self, card, context)
+        if context.discard then
+			local benefits = 3
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+			card.ability.extra.discards = card.ability.extra.discards - 1
+			if benefits == 2 and card.ability.extra.discards == 2 then
+				card.ability.extra.discards = card.ability.extra.discards - 1
+			end
+			if card.ability.extra.discards <= 0 then
+				ease_hands_played(1)
+				card.ability.extra.discards = benefits
+				return {
+                message = "+1 Hand",
+				colour = G.C.CHIPS,
+				card = card
+				}
+			else
+				return {
+                message = card.ability.extra.discards .. " left",
+				card = card
+				}
+			end
+        end
+    end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_salientstream" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "reveler",
+    name = "The Reveler",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 6, y = 2},
+    loc_txt = {
+        name = "The Reveler",
+        text = {
+            "Earn extra {C:money}${} equal to",
+			"#1#remaining {C:chips}Hands{} and",
+			"{C:red}Discards{} at end of round"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Luminous Lemonade{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_luminouslemonade"}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = ""
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = "double the " end
+        return { vars = {benefits} }
+    end,
+    calculate_cash = function(self, card)
+		local benefits = 1
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 2 end
+		local bonus = (G.GAME.current_round.hands_left + G.GAME.current_round.discards_left) * benefits
+		if bonus > 0 then return bonus end
+	end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_luminouslemonade" then
+                if get_joker_win_sticker(v, true) >= 8 then
+                    return true
+                end
+                break
+            end
+        end
+    end
+}
+Partner_API.Partner{
+    key = "gamer",
+    name = "The Gamer",
+    unlocked = false,
+    discovered = true,
+	individual_quips = true,
+    pos = {x = 7, y = 2},
+    loc_txt = {
+        name = "The Gamer",
+        text = {
+            "{C:attention}Jokers{} give {X:mult,C:white}X#1#{}",
+			"Mult when triggering"
+        },
+		unlock={
+            "Win a run with",
+            "{C:attention}Glorious Glaive{} on",
+            "{C:attention}Gold Stake{} difficulty",
+        },
+    },
+    atlas = "partners",
+    config = {extra = {related_card = "j_finity_gloriousglaive", xmult = 1.25}},
+    loc_vars = function(self, info_queue, card)
+        local benefits = 0
+        if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 0.25 end
+        return { vars = {card.ability.extra.xmult + benefits} }
+    end,
+    calculate = function(self, card, context)
+		if context.post_trigger and context.other_card then
+			local benefits = 0
+			if next(SMODS.find_card(card.ability.extra.related_card)) then benefits = 0.25 end
+			return {
+                Xmult_mod = card.ability.extra.xmult + benefits,
+                message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult + benefits } },
+				card = card
+			}
+		end
+	end,
+	check_for_unlock = function(self, args)
+        for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+            if v.key == "j_finity_gloriousglaive" then
                 if get_joker_win_sticker(v, true) >= 8 then
                     return true
                 end
