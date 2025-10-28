@@ -4,6 +4,7 @@ SMODS.Atlas {key = "tag", path = "tag.png", px = 34, py = 34}
 SMODS.Atlas({key = 'bossjokers', path = 'jokers.png', px = 71, py = 95})
 SMODS.Atlas({key = 'boss_shinyjokers', path = 'compat/shinyjokers.png', px = 71, py = 95})
 SMODS.Atlas({key = 'crybossjokers', path = 'compat/cryptid.png', px = 71, py = 95})
+SMODS.Atlas({key = 'cryboss_shinyjokers', path = 'compat/shinycryptid.png', px = 71, py = 95})
 SMODS.Atlas({key = 'akyrsbossjokers', path = 'compat/aikoyorisshenanigans.png', px = 71, py = 95})
 SMODS.Atlas({key = 'ortalabbossjokers', path = 'compat/ortalab.png', px = 71, py = 95})
 SMODS.Atlas({key = 'cardsaucebossjokers', path = 'compat/cardsauce.png', px = 71, py = 95})
@@ -1192,6 +1193,7 @@ SMODS.Joker {
     name = "Lavender Loop",
     atlas = 'crybossjokers',
 	pronouns = "she_her",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Lavender Loop",
         text = {
@@ -1268,6 +1270,7 @@ SMODS.Joker {
     name = "Turquoise Tornado",
     atlas = 'crybossjokers',
 	pronouns = "she_her",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Turquoise Tornado",
         text = {
@@ -1323,6 +1326,7 @@ SMODS.Joker {
     name = "Vermillion Virus",
     atlas = 'crybossjokers',
 	pronouns = "he_they_it",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Vermillion Virus",
         text = {
@@ -1420,6 +1424,7 @@ SMODS.Joker {
     name = "Sapphire Stamp",
     atlas = 'crybossjokers',
 	pronouns = "he_they",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Sapphire Stamp",
         text = {
@@ -1453,6 +1458,7 @@ SMODS.Joker {
     name = "Obsidian Orb",
     atlas = 'crybossjokers',
 	pronouns = "he_it",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Obsidian Orb",
         text = {
@@ -1520,6 +1526,7 @@ SMODS.Joker {
     name = "Lemon Trophy",
     atlas = 'crybossjokers',
 	pronouns = "he_him",
+	poke_custom_prefix = "finity_cryboss",
     loc_txt = {
         name = "Lemon Trophy",
         text = {
