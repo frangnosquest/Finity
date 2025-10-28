@@ -315,8 +315,8 @@ SMODS.Joker {
         name = "Violet Vessel",
         text = {
             "All {C:attention}Boss Blinds{} become {C:purple}The Wall{} or ",
-			"{C:purple}Violet Vessel{}, gains {X:mult,C:white}XMult{} equal to {C:attention}score",
-			"{C:attention}surplus ratio{} after beating a {C:attention}Boss Blind{}",
+			"{C:purple}Violet Vessel{}, gains {X:mult,C:white}XMult{} equal to score",
+			"surplus ratio after beating a {C:attention}Boss Blind{}",
 			"{C:inactive,s:0.8}(Max {X:mult,C:white,s:0.8}X#2#{C:inactive,s:0.8} Mult per round, currently {X:mult,C:white,s:0.8}X#1#{C:inactive,s:0.8} Mult)",
         }
     },
@@ -564,7 +564,7 @@ SMODS.Joker {
     loc_txt = {
         name = "Cerulean Bell",
         text = {
-            "One random card in hand is {C:attention}marked,",
+            "One random card in hand is {C:attention}marked{},",
 			"marked cards permanently gain",
 			"{X:mult,C:white}X#1#{} Mult when scored"
         }
@@ -1706,7 +1706,7 @@ SMODS.Joker {
     discovered = true,
     eternal_compat = true,
     perishable_compat = true,
-    blueprint_compat = false,
+    blueprint_compat = true,
     rarity = "finity_showdown",
     pos = { x = 0, y = 4 },
     cost = 10,
@@ -1726,7 +1726,7 @@ SMODS.Joker {
 		end
 	end,
 	calculate = function(self, card, context)
-		if context.after and context.scoring_hand and not context.blueprint then
+		if context.after and context.scoring_hand then
 			for i = 1, #context.scoring_hand do
 				if tostring(context.scoring_hand[i].config.card.value) == "finity_V" and context.scoring_hand[i+1] then
 					G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
@@ -1743,7 +1743,7 @@ SMODS.Joker {
 			end
 			local activated = 0
 			for i = 1, #context.scoring_hand do
-				if tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.first) or tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.second) then
+				if (not context.blueprint) and tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.first) or tostring(context.scoring_hand[i].config.card.value) == tostring(card.ability.ranks.second) then
 					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function() context.scoring_hand[i]:flip(); play_sound('card1', 1); context.scoring_hand[i]:juice_up(0.3, 0.3); return true end }))
 					G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.05,func = function()
 						SMODS.change_base(context.scoring_hand[i], context.scoring_hand[i].config.card.suit, "finity_V")
@@ -2038,6 +2038,7 @@ SMODS.Rank {
 end
 --ortalab crossmod jokers
 if next(SMODS.find_mod('ortalab')) then
+if finity_config.olderortalab == true then
 SMODS.Joker{
     name = "Celadon Clubs",
     key = "celadonclubs",
@@ -2098,6 +2099,102 @@ SMODS.Joker{
 		end
     end
 }
+else
+SMODS.Joker{
+    name = "Celadon Clubs",
+    key = "celadonclubs",
+    loc_txt = {
+        ['name'] = 'Celadon Clubs',
+        ['text'] = {
+			"Played cards of {C:attention}most",
+			"{C:attention}common{} rank each give",
+			"{X:mult,C:white}X#1#{} Mult when scored",
+			"{C:inactive}(Targeting #2#)"
+        }
+    },
+	config = {
+		extra = {xmult = 1.75}
+	},
+	loc_vars = function(self, info_queue, card)
+		local mostcommonvar = "none"
+		local tally = {}
+		local most_common = {}
+		local max_count = 0	
+		if G.playing_cards then
+			for _, playing_card in ipairs(G.playing_cards) do
+				local raw_value = playing_card.base.value
+				if raw_value then
+					local value = raw_value:match("^[^_]+_(.+)") or raw_value
+					tally[value] = (tally[value] or 0) + 1
+					if tally[value] > max_count then
+						max_count = tally[value]
+					end
+				end
+			end
+			for value, count in pairs(tally) do
+				if count == max_count then
+					table.insert(most_common, value)
+				end
+			end
+			if #most_common == 1 then
+				mostcommonvar = most_common[1] .. "s"
+			elseif #most_common == 2 then
+				mostcommonvar = most_common[1] .. "s and " .. most_common[2] .. "s"
+			elseif #most_common > 2 then
+				mostcommonvar = "multiple ranks"
+			end
+		end
+        return { vars = { card.ability.extra.xmult, mostcommonvar} }
+    end,
+    pos = {
+        x = 0,
+        y = 0
+    },
+	soul_pos = { x = 1, y = 0 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = true,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+    calculate = function(self, card, context)
+		if context.individual and context.cardarea == G.play then
+			local tally = {}
+			local most_common = {}
+			local max_count = 0
+			if G.playing_cards then
+				for _, playing_card in ipairs(G.playing_cards) do
+					local value = playing_card:get_id()
+					if value then
+						tally[value] = (tally[value] or 0) + 1
+						if tally[value] > max_count then
+							max_count = tally[value]
+						end
+					end
+				end
+				for value, count in pairs(tally) do
+					if count == max_count then
+						table.insert(most_common, value)
+					end
+				end
+			end
+			local found = false
+			for _, value in ipairs(most_common) do
+				if value == context.other_card:get_id() then
+					found = true
+					break
+				end
+			end
+			if found == true then
+				return {
+					xmult = card.ability.extra.xmult
+				}
+			end
+		end
+    end
+}
+end
 SMODS.Joker{
     name = "Caramel Coin",
     key = "caramelcoin",
@@ -2149,6 +2246,7 @@ SMODS.Joker{
 		end
 	end
 }
+if finity_config.olderortalab == true then
 SMODS.Joker{
     name = "Saffron Shield",
     key = "saffronshield",
@@ -2251,6 +2349,196 @@ SMODS.Joker{
         end
     end
 }
+else
+SMODS.Joker{
+    name = "Saffron Shield",
+    key = "saffronshield",
+    config = {
+        extra = {
+		odds = 2
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Saffron Shield',
+        ['text'] = {
+            "{C:dark_edition}+1{} hand size, Joker slot",
+            "and consumable slot per",
+			"missing base suit in deck",
+            "{C:inactive}(currently {C:attention}+#1#{C:inactive}){}"
+        }
+    },
+    pos = {
+        x = 0,
+        y = 2
+    },
+	soul_pos = { x = 1, y = 2 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = false,
+    eternal_compat = true,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+	config = {
+		extra = {modifier = 0}
+	},
+    loc_vars = function(self, info_queue, card)
+		local chearts = 1
+		local cdiamonds = 1
+		local cspades = 1
+		local cclubs = 1
+		if G.playing_cards then
+			for _, playing_card in ipairs(G.playing_cards) do
+				if playing_card:is_suit('Hearts') then
+					chearts = 0
+				end
+				if playing_card:is_suit('Diamonds') then
+					cdiamonds = 0
+				end
+				if playing_card:is_suit('Spades') then
+					cspades = 0
+				end
+				if playing_card:is_suit('Clubs') then
+					cclubs = 0
+				end
+			end
+		end
+        return{ vars = {chearts + cdiamonds + cspades + cclubs}}
+    end,
+	set_ability = function(self, card, initial, delay_sprites)
+		if G.playing_cards then
+			local chearts = 1
+			local cdiamonds = 1
+			local cspades = 1
+			local cclubs = 1
+			for _, playing_card in ipairs(G.playing_cards) do
+				if playing_card:is_suit('Hearts') then
+					chearts = 0
+				end
+				if playing_card:is_suit('Diamonds') then
+					cdiamonds = 0
+				end
+				if playing_card:is_suit('Spades') then
+					cspades = 0
+				end
+				if playing_card:is_suit('Clubs') then
+					cclubs = 0
+				end
+			end
+			card.ability.extra.modifier = chearts + cdiamonds + cspades + cclubs
+		end
+    end,
+	add_to_deck = function(self, card, from_debuff)
+		local chearts = 1
+		local cdiamonds = 1
+		local cspades = 1
+		local cclubs = 1
+        for _, playing_card in ipairs(G.playing_cards) do
+			if playing_card:is_suit('Hearts') then
+				chearts = 0
+			end
+			if playing_card:is_suit('Diamonds') then
+				cdiamonds = 0
+			end
+			if playing_card:is_suit('Spades') then
+				cspades = 0
+			end
+			if playing_card:is_suit('Clubs') then
+				cclubs = 0
+			end
+		end
+		card.ability.extra.modifier = chearts + cdiamonds + cspades + cclubs
+		G.jokers:change_size(card.ability.extra.modifier)
+		G.hand:change_size(card.ability.extra.modifier)
+		G.consumeables:change_size(card.ability.extra.modifier)
+    end,
+	remove_from_deck = function(self, card, from_debuff)
+		G.jokers:change_size(-card.ability.extra.modifier)
+		G.hand:change_size(-card.ability.extra.modifier)
+		G.consumeables:change_size(-card.ability.extra.modifier)
+	end,
+    calculate = function(self, card, context)
+        if (context.end_of_round or context.other_card) and not context.blueprint then
+			local chearts = 1
+			local cdiamonds = 1
+			local cspades = 1
+			local cclubs = 1
+			for _, playing_card in ipairs(G.playing_cards) do
+					if playing_card:is_suit('Hearts') then
+						chearts = 0
+					end
+					if playing_card:is_suit('Diamonds') then
+						cdiamonds = 0
+					end
+					if playing_card:is_suit('Spades') then
+						cspades = 0
+					end
+					if playing_card:is_suit('Clubs') then
+						cclubs = 0
+					end
+			end
+			local suitsum = chearts + cdiamonds + cspades + cclubs
+			if card.ability.extra.modifier ~= suitsum then
+				G.jokers:change_size(-card.ability.extra.modifier + suitsum)
+				G.hand:change_size(-card.ability.extra.modifier + suitsum)
+				G.consumeables:change_size(-card.ability.extra.modifier + suitsum)
+				card.ability.extra.modifier = suitsum
+			end
+        end
+    end
+}
+SMODS.Joker{
+    name = "Rouge Rose",
+    key = "rougerose",
+    config = {
+        extra = {
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Rouge Rose',
+        ['text'] = {
+            "If {C:attention}first hand{} of round",
+            "has only {C:attention}1 enhanced{} card,",
+			"remove the {C:attention}enhancement{}",
+            "and make it {C:dark_edition}Negative{}"
+        }
+    },
+    pos = {
+        x = 0,
+        y = 3
+    },
+	soul_pos = { x = 1, y = 3 },
+    cost = 10,
+    rarity = "finity_showdown",
+    blueprint_compat = false,
+    eternal_compat = false,
+    unlocked = true,
+    discovered = true,
+    atlas = 'ortalabbossjokers',
+
+    loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue+1] =  {key = 'e_negative_playing_card', set = 'Edition', config = {extra = 1}}
+	end,
+
+    calculate = function(self, card, context)
+        if context.first_hand_drawn and not context.blueprint then
+            local eval = function() return G.GAME.current_round.hands_played == 0 and not G.RESET_JIGGLES end
+            juice_card_until(card, eval, true)
+        end
+		if context.after and G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 and context.full_hand[1].ability.set == "Enhanced" then
+			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function() context.full_hand[1]:flip(); play_sound('card1', 1); context.full_hand[1]:juice_up(0.3, 0.3); return true end }))
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.05,func = function()
+				context.full_hand[1]:set_ability("c_base")
+				context.full_hand[1]:set_edition({negative = true})
+			return true end}))
+			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 1, func = function() context.full_hand[1]:flip(); play_sound('tarot2', 1, 0.6); card:juice_up(0.3, 0.3); context.full_hand[1]:juice_up(0.3, 0.3); return true end }))
+			return {
+                message = "Purified"
+            }
+		end
+    end
+}
+end
 SMODS.Joker{
     name = "Silver Sword",
     key = "silversword",
@@ -2262,10 +2550,10 @@ SMODS.Joker{
     loc_txt = {
         ['name'] = 'Silver Sword',
         ['text'] = {
-            [1] = '{X:mult,C:white}X#1#{} Mult per owned joker,',
-            [2] = 'create a {C:dark_edition}Negative{} {C:attention}Silver Sword{}',
+            [1] = '{X:mult,C:white}X#1#{} Mult per owned {C:attention}Joker{}',
+            [2] = 'Create a {C:dark_edition}Negative{} {C:attention}Silver Sword{}',
             [3] = 'if not {C:dark_edition}Negative{} when beating a',
-            [4] = 'blind with the {C:attention}first hand{} of round',
+            [4] = 'blind with {C:attention}first hand{} of round',
             [5] = '{C:inactive,s:0.8}(Currently {}{X:mult,C:white,s:0.8}X#2#{}{C:inactive,s:0.8} Mult){}'
         }
     },
@@ -3920,6 +4208,66 @@ function Game:main_menu(ctx)
 		end
     return ret
 end
+local old_g_funcs_check_for_buy_space = G.FUNCS.check_for_buy_space --thank you More Fluff!
+G.FUNCS.check_for_buy_space = function(card)
+	if card.config.center_key == "j_finity_saffronshield" and finity_config.olderortalab == false then
+		local chearts = 1
+		local cdiamonds = 1
+		local cspades = 1
+		local cclubs = 1
+        for _, playing_card in ipairs(G.playing_cards) do
+			if playing_card:is_suit('Hearts') then
+				chearts = 0
+			end
+			if playing_card:is_suit('Diamonds') then
+				cdiamonds = 0
+			end
+			if playing_card:is_suit('Spades') then
+				cspades = 0
+			end
+			if playing_card:is_suit('Clubs') then
+				cclubs = 0
+			end
+		end
+		local extraslots = chearts + cdiamonds + cspades + cclubs
+		if #G.jokers.cards < G.jokers.config.card_limit + extraslots then
+			return true
+		end
+	end
+	return old_g_funcs_check_for_buy_space(card)
+end
+local old_g_funcs_can_select_card = G.FUNCS.can_select_card
+G.FUNCS.can_select_card = function(e)
+  if e.config.ref_table.config.center_key == "j_finity_saffronshield" and finity_config.olderortalab == false then
+	local chearts = 1
+		local cdiamonds = 1
+		local cspades = 1
+		local cclubs = 1
+        for _, playing_card in ipairs(G.playing_cards) do
+			if playing_card:is_suit('Hearts') then
+				chearts = 0
+			end
+			if playing_card:is_suit('Diamonds') then
+				cdiamonds = 0
+			end
+			if playing_card:is_suit('Spades') then
+				cspades = 0
+			end
+			if playing_card:is_suit('Clubs') then
+				cclubs = 0
+			end
+		end
+		local extraslots = chearts + cdiamonds + cspades + cclubs
+		if #G.jokers.cards < G.jokers.config.card_limit + extraslots then
+			e.config.colour = G.C.GREEN
+			e.config.button = 'use_card'
+		else
+			old_g_funcs_can_select_card(e)
+		end
+  else
+    old_g_funcs_can_select_card(e)
+  end
+end
 
 SMODS.current_mod.extra_tabs = function()
     return {
@@ -4053,6 +4401,9 @@ SMODS.current_mod.config_tab = function()
     return {n = G.UIT.ROOT, config = {r = 0.1, minw = 4, align = "tm", padding = 0.2, colour = G.C.BLACK}, nodes = {
             {n=G.UIT.R, config = {align = 'cm'}, nodes={
                 create_toggle({label = "Enable spectral card (requires restart)", ref_table = finity_config, ref_value = 'spectral', active_colour = G.C.BLUE, right = true}),
+            }},
+			{n=G.UIT.R, config = {align = 'cm'}, nodes={
+                create_toggle({label = "Use beta Ortalab Showdowns (requires restart)", ref_table = finity_config, ref_value = 'olderortalab', active_colour = G.C.RED, right = false}),
             }},
     }}
 end
