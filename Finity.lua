@@ -2877,42 +2877,6 @@ SMODS.Joker{
     end
 }
 end
---bunco crossmod jokers
-if next(SMODS.find_mod('Bunco')) then
-SMODS.Joker {
-    key = "chartreusecrown",
-    name = "Chartreuse Crown",
-    atlas = 'akyrsbossjokers',
-    loc_txt = {
-        name = "Chartreuse Crown",
-        text = {
-			"{C:attention}Retrigger{} all played",
-            "{C:attention}nonstandard suit cards{}, they",
-			"give {X:mult,C:white}X#1#{} Mult when scored"
-        }
-    },
-    config = { extra = { xmult = 1.5 } },
-    loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.xmult } }
-    end,
-	unlocked = true,
-    discovered = true,
-    eternal_compat = true,
-    perishable_compat = true,
-    blueprint_compat = true,
-    rarity = "finity_showdown",
-    pos = { x = 0, y = 7 },
-    cost = 10,
-	soul_pos = { x = 1, y = 7 },
-    calculate = function(self, card, context)
-        if context.individual and context.cardarea == G.play then
-            return {
-                xmult = card.ability.extra.xmult
-            }
-        end
-    end,
-}
-end
 
 if next(SMODS.find_mod('partner')) then
 Partner_API.Partner{
@@ -4586,4 +4550,5 @@ G.localization.descriptions.Joker['benefitskeeper'] =  {
 			"{C:attention}+1{} consumable slot when",
 			"{C:attention}Periwinkle Pinecone{} is obtained"
         },
+
 }
