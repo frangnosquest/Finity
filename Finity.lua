@@ -2052,7 +2052,7 @@ SMODS.Joker{
     loc_txt = {
         ['name'] = 'Celadon Clubs',
         ['text'] = {
-			"Retrigger all {C:attention}even{} cards once,",
+			"Retrigger all {C:attention}even{} cards,",
 			"{C:attention}odd{} cards are destroyed after",
 			"scoring, {C:attention}face{} cards permanently",
 			"gain {X:chips,C:white}X#1#{} Chips when scored"
@@ -2875,6 +2875,42 @@ SMODS.Joker{
                 }
         end
     end
+}
+end
+--bunco crossmod jokers
+if next(SMODS.find_mod('Bunco')) then
+SMODS.Joker {
+    key = "chartreusecrown",
+    name = "Chartreuse Crown",
+    atlas = 'akyrsbossjokers',
+    loc_txt = {
+        name = "Chartreuse Crown",
+        text = {
+			"{C:attention}Retrigger{} all played",
+            "{C:attention}nonstandard suit cards{}, they",
+			"give {X:mult,C:white}X#1#{} Mult when scored"
+        }
+    },
+    config = { extra = { xmult = 1.5 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult } }
+    end,
+	unlocked = true,
+    discovered = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    blueprint_compat = true,
+    rarity = "finity_showdown",
+    pos = { x = 0, y = 7 },
+    cost = 10,
+	soul_pos = { x = 1, y = 7 },
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play then
+            return {
+                xmult = card.ability.extra.xmult
+            }
+        end
+    end,
 }
 end
 
@@ -3706,7 +3742,6 @@ Partner_API.Partner{
         end
     end
 }
-end
 Partner_API.Partner{
     key = "tearful",
     name = "The Tearful",
@@ -4114,6 +4149,7 @@ Partner_API.Partner{
         end
     end
 }
+end
 end
 
 function safely_get(t, ...)
