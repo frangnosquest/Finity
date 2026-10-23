@@ -5,12 +5,11 @@ priority = 4
 
 [[patches]]
 [patches.pattern]
-target = "tag.lua"
-pattern = "if self.name == 'Double Tag' and _context.tag.key ~= 'tag_double' then"
-position = "at"
-payload = '''if self.name == 'Double Tag' and _context.tag.key ~= 'tag_double' and _context.tag.key ~= 'tag_finity_showdown' then'''
+target = '''=[SMODS Cryptid "items/tag.lua"]'''
+pattern = 'and self.key ~= "tag_ortalab_rewind"'
+position = "after"
+payload = 'and self.key ~= "tag_finity_showdown"'
 match_indent = true
-overwrite = true
 
 [[patches]]
 [patches.pattern]
@@ -18,7 +17,7 @@ target = "game.lua"
 pattern = "self.GAME.round_resets.blind_choices.Boss = get_new_boss()"
 position = "before"
 payload = '''
-if G.GAME.selected_back.name == "b_finity_challenger" and CardSleeves and G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_finity_challenger" then
+if Finity.challenger_sleeve_active() then
     G.finityvvcheck = true
     self.GAME.round_resets.blind_choices.Big = get_new_boss()
 end
@@ -29,7 +28,7 @@ match_indent = true
 [patches.pattern]
 target = 'card.lua'
 pattern = '''
-if self.ability.perishable and self.ability.perish_tally <= 0 then 
+if self.ability.perishable and self.ability.perish_tally <= 0 then
     if not self.debuff then
         self.debuff = true
         if self.area == G.jokers then self:remove_from_deck(true) end
@@ -39,7 +38,7 @@ end
 '''
 position = 'after'
 payload = '''
-if next(SMODS.find_card("j_finity_periwinklepinecone")) and self.seal then should_debuff = false end
+if Finity.ignores_debuff(self) then should_debuff = false end
 if self.ability and self.ability.finitysaffronshieldmark then
     if self.debuff then
         self.debuff = false
@@ -78,17 +77,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "G.GAME.round_resets.blind_choices.Boss = get_new_boss()"
 position = "before"
-payload = '''
-if CardSleeves and G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_finity_challenger" and G.GAME.selected_back.name == "b_finity_challenger" then
-    G.finityvvcheck = true
-    G.GAME.round_resets.blind_choices.Big = get_new_boss()
-elseif G.GAME.modifiers.cry_rush_hour_ii then
-    G.GAME.round_resets.blind_choices.Small = get_new_boss()
-    G.GAME.round_resets.blind_choices.Big = get_new_boss()
-else
-    G.GAME.round_resets.blind_choices.Big = 'bl_big'
-end
-'''
+payload = "Finity.reset_big_blind()"
 match_indent = true
 
 [[patches]]
@@ -96,17 +85,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "G.GAME.round_resets.blind_choices.Big = get_new_big()"
 position = "after"
-payload = '''
-if CardSleeves and G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_finity_challenger" and G.GAME.selected_back.name == "b_finity_challenger" then
-    G.finityvvcheck = true
-    G.GAME.round_resets.blind_choices.Big = get_new_boss()
-elseif G.GAME.modifiers.cry_rush_hour_ii then
-    G.GAME.round_resets.blind_choices.Small = get_new_boss()
-    G.GAME.round_resets.blind_choices.Big = get_new_boss()
-else
-    G.GAME.round_resets.blind_choices.Big = 'bl_big'
-end
-'''
+payload = "Finity.reset_big_blind(true)"
 match_indent = true
 
 [[patches]]
@@ -114,14 +93,7 @@ match_indent = true
 target = "card.lua"
 pattern = "if self.ability.rental then badges[#badges + 1] = 'rental' end"
 position = "after"
-payload = '''
-if self.ability.finitycrimsonheartmark and self.ability.finitycrimsonheartmark ~= "lovesick" then badges[#badges + 1] = 'heart_mark' end
-if self.ability.finitycrimsonheartmark and self.ability.finitycrimsonheartmark == "lovesick" then badges[#badges + 1] = 'heart_mark_partner' end
-if self.ability.finityceruleanbellmark and self.ability.finityceruleanbellmark ~= "controlling" then badges[#badges + 1] = 'bell_mark' end
-if self.ability.finityceruleanbellmark and self.ability.finityceruleanbellmark == "controlling" then badges[#badges + 1] = 'bell_mark_partner' end
-if self.ability.finityrazzleraindropmark then badges[#badges + 1] = 'raindrop_mark' end
-if self.ability.finitysaffronshieldmark then badges[#badges + 1] = 'shield_mark' end
-'''
+payload = "Finity.add_mark_badges(self, badges)"
 match_indent = true
 
 [[patches]]
@@ -129,30 +101,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "if v == 'pinned_left' then info_queue[#info_queue+1] = {key = 'pinned_left', set = 'Other'} end"
 position = "before"
-payload = '''
-if v == 'heart_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'crimsonmark'} end
-if v == 'heart_mark_partner' then info_queue[#info_queue+1] = {set = 'Other', key = 'crimsonmarkpartner'} end
-if v == 'bell_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'ceruleanmark'} end
-if v == 'bell_mark_partner' then info_queue[#info_queue+1] = {set = 'Other', key = 'ceruleanmarkpartner'} end
-if v == 'raindrop_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'razzlemark'} end
-if v == 'shield_mark' then info_queue[#info_queue+1] = {set = 'Other', key = 'saffronmark'} end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = "full_UI_table = {"
-position = "before"
-payload = '''
-badges=badges or {}
-local _markbadges = {}
-	for k, v in ipairs(badges) do
-		if v == 'heart_mark' or v == 'bell_mark' or v == 'raindrop_mark' or v == 'shield_mark' or v == 'heart_mark_partner' or v == 'bell_mark_partner' then
-			_markbadges[k] = v
-		end
-	end
-'''
+payload = "Finity.mark_info(v, info_queue)"
 match_indent = true
 
 [[patches]]
@@ -160,7 +109,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "badges = badges or {}"
 position = "at"
-payload = '''badges = FinityRemoveMatchingKeys(badges, _markbadges)'''
+payload = "badges = Finity.filter_mark_badges(badges)"
 match_indent = true
 overwrite = true
 
@@ -170,53 +119,8 @@ target = "game.lua"
 pattern = '''if G.OVERLAY_MENU and G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot') then'''
 position = "after"
 payload = '''
-if G.GAME.blind and FinisherBossBlindQuips[G.GAME.blind.config.blind.key] then
-	G.GAME.finityshowdownloss = true
-	local text = 'lq_' .. FinisherBossBlindQuips[G.GAME.blind.config.blind.key][1] .. '_' ..math.random(1,FinisherBossBlindQuips[G.GAME.blind.config.blind.key][2])
-	if G.GAME.round_resets.ante >= G.GAME.win_ante then
-		text = 'lq_endless_' .. FinisherBossBlindQuips[G.GAME.blind.config.blind.key][1] .. '_' ..math.random(1,FinisherBossBlindQuips[G.GAME.blind.config.blind.key][3])
-	end
-	Jimbo = Card_Character({x = 0, y = 5})
-    local spot = G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot')
-    spot.config.object:remove()
-    spot.config.object = Jimbo
-    Jimbo.ui_object_updated = true
-	Jimbo:add_speech_bubble(text, nil, {quip = true})
-	Jimbo:say_stuff(5 )
-	G.GAME.finityshowdownloss = nil
-	if next(SMODS.find_mod('SealsOnEverything')) then
-		local text2 = 'lq_' .. FinisherBossBlindQuips[G.GAME.blind.config.blind.key][1] .. '_' ..math.random(1,FinisherBossBlindQuips[G.GAME.blind.config.blind.key][2])
-		if G.GAME.round_resets.ante >= G.GAME.win_ante then
-			text2 = 'lq_endless_' .. FinisherBossBlindQuips[G.GAME.blind.config.blind.key][1] .. '_' ..math.random(1,FinisherBossBlindQuips[G.GAME.blind.config.blind.key][3])
-		end
-		G.E_MANAGER:add_event(Event({
-		trigger = 'after',
-		delay = 1,
-		blocking = false,
-		func = (function()
-			if G.OVERLAY_MENU and G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot') then 
-				Jimbo.ui_object_updated = true
-				Jimbo:add_speech_bubble('again', nil, {quip = true})
-				Jimbo:say_stuff(2)
-			end
-			return true
-		end)
-		}))
-		G.E_MANAGER:add_event(Event({
-			trigger = 'after',
-			delay = 1.5,
-			blocking = false,
-			func = (function()
-				if G.OVERLAY_MENU and G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot') then 
-					Jimbo.ui_object_updated = true
-					Jimbo:add_speech_bubble(text2, nil, {quip = true})
-					Jimbo:say_stuff(5 )
-				end
-				return true
-			end)
-		}))
-	end
-	return true
+if Finity.showdown_game_over(G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot')) then
+    return true
 end
 '''
 match_indent = true
@@ -227,7 +131,7 @@ target = "game.lua"
 pattern = '''if G.GAME.round_resets.ante <= G.GAME.win_ante then --Only add Jimbo to say a quip if the game over happens when the run is lost'''
 position = "at"
 payload = '''
-if G.GAME.round_resets.ante <= G.GAME.win_ante or (FinisherBossBlindQuips and FinisherBossBlindQuips[G.GAME.blind.config.blind.key] and FinisherBossBlindQuips[G.GAME.blind.config.blind.key][3]) then --Only add Jimbo to say a quip if the game over happens when the run is lost
+if G.GAME.round_resets.ante <= G.GAME.win_ante or Finity.has_endless_quips() then --Only add Jimbo to say a quip if the game over happens when the run is lost
 '''
 match_indent = true
 
@@ -237,7 +141,7 @@ target = "game.lua"
 pattern = '''if G.GAME.round_resets.ante <= G.GAME.win_ante or G.GAME.EECardCharacter then --Only add Jimbo to say a quip if the game over happens when the run is lost'''
 position = "at"
 payload = '''
-if G.GAME.round_resets.ante <= G.GAME.win_ante or G.GAME.EECardCharacter or FinisherBossBlindQuips[G.GAME.blind.config.blind.key][3] then --Only add Jimbo to say a quip if the game over happens when the run is lost
+if G.GAME.round_resets.ante <= G.GAME.win_ante or G.GAME.EECardCharacter or Finity.has_endless_quips() then --Only add Jimbo to say a quip if the game over happens when the run is lost
 '''
 match_indent = true
 
@@ -247,8 +151,9 @@ target = "card_character.lua"
 pattern = 'self.config = {args = args}'
 position = "after"
 payload = '''
-if G.GAME.blind and G.GAME.finityshowdownloss then
-	self.children.card = Card(self.T.x, self.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, args.center or G.P_CENTERS[FinisherBossBlindStringMap[G.GAME.blind.config.blind.key][1]], {bypass_discovery_center = true})
+local finity_center = G.GAME.blind and G.GAME.finityshowdownloss and Finity.showdown_character_center()
+if finity_center then
+	self.children.card = Card(self.T.x, self.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, args.center or finity_center, {bypass_discovery_center = true})
 else
 '''
 match_indent = true
