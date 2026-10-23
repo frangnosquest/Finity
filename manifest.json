@@ -1,0 +1,9 @@
+{
+	"name": "Finity",
+	"description": "A Balatro mod that is all about befriending your foes.",
+	"version_number": "1.5",
+	"website_url": "https://github.com/frangnosquest/Finity",
+	"dependencies": [
+		"Steamodded-Steamodded-26.927.0"
+	]
+}
