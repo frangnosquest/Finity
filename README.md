@@ -1,7 +1,6 @@
 # Finity
-A Balatro mod that is all about befriending your foes
 
-This mod adds a new joker rarity, "Showdown", jokers of this rarity are unique and only obtainable in the shop after defeating the relative showdown blind, altough there are ways to obtain them earlier, this means that these jokers spice up runs that continue through endless.
+This mod adds a new joker rarity, "Showdown", jokers of this rarity are unique and only obtainable in the shop after defeating their relative showdown blinds, while there are ways to obtain them even earlier these jokers are meant to give you an extra reason to continue won runs through endless.
 
 # Crossmod
 Finity has built-in support for the following mods:
@@ -10,7 +9,7 @@ Finity has built-in support for the following mods:
 
 -Aikoyori's Shenanigans https://github.com/Aikoyori/Balatro-Aikoyoris-Shenanigans
 
--Ortalab https://github.com/GauntletGames-2086/Ortalab-DEMO
+-Ortalab https://github.com/EremelMods/Ortalab
 
 -Paperback https://github.com/Balatro-Paperback/paperback
 
@@ -36,6 +35,10 @@ Also, some mod creators went out of their way to add finity support on their own
 -Cruel Blinds https://github.com/Mathguy23/Cruel-Blinds
 
 -Madcap https://github.com/RGBeet/Madcap
+
+# How can i make my own Showdown Jokers?
+
+If you are a mod developer and want to add Jokers for your blinds, or you just want to make compat for another mod, Finity has a few tools to help you, modules/api.lua contains informations regarding how to register a Showdown Joker and how to bind it to a specific blind, along with extra features the mod has.
 
 # Credits
 _Freh: Lead developer
