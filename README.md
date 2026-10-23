@@ -9,7 +9,7 @@ Finity has built-in support for the following mods:
 
 -Aikoyori's Shenanigans https://github.com/Aikoyori/Balatro-Aikoyoris-Shenanigans
 
--Ortalab https://github.com/GauntletGames-2086/Ortalab-DEMO
+-Ortalab https://github.com/EremelMods/Ortalab
 
 -Paperback https://github.com/Balatro-Paperback/paperback
 
